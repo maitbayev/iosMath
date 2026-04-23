@@ -437,6 +437,18 @@ NSString *const MTParseError = @"ParseError";
         frac.numerator = [self buildInternal:true];
         frac.denominator = [self buildInternal:true];
         return frac;
+    } else if ([command isEqualToString:@"dfrac"]) {
+        MTFraction* frac = [MTFraction new];
+        frac.numerator = [self buildInternal:true];
+        frac.denominator = [self buildInternal:true];
+        frac.fracStyle = kMTFracStyleDisplay;
+        return frac;
+    } else if ([command isEqualToString:@"tfrac"]) {
+        MTFraction* frac = [MTFraction new];
+        frac.numerator = [self buildInternal:true];
+        frac.denominator = [self buildInternal:true];
+        frac.fracStyle = kMTFracStyleText;
+        return frac;
     } else if ([command isEqualToString:@"binom"]) {
         // A binom command has 2 arguments
         MTFraction* frac = [[MTFraction alloc] initWithRule:NO];
@@ -759,7 +771,13 @@ NSString *const MTParseError = @"ParseError";
         if (atom.type == kMTMathAtomFraction) {
             MTFraction* frac = (MTFraction*) atom;
             if (frac.hasRule) {
-                [str appendFormat:@"\\frac{%@}{%@}", [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
+                NSString* fracCommand;
+                switch (frac.fracStyle) {
+                    case kMTFracStyleDisplay: fracCommand = @"dfrac"; break;
+                    case kMTFracStyleText:    fracCommand = @"tfrac"; break;
+                    default:                 fracCommand = @"frac";  break;
+                }
+                [str appendFormat:@"\\%@{%@}{%@}", fracCommand, [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
             } else {
                 NSString* command = nil;
                 if (!frac.leftDelimiter && !frac.rightDelimiter) {

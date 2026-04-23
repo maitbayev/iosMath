@@ -83,7 +83,8 @@ struct ContentView: View {
         latex: renderedLatex,
         fontFace: fontFace,
         fontSize: 20,
-        textColor: selectedColor.uiColor
+        textColor: selectedColor.uiColor,
+        mode: .text
       )
       .padding(8)
       .frame(height: 80)

@@ -310,6 +310,7 @@ static NSString* typeToText(MTMathAtomType type) {
     frac->_hasRule = self.hasRule;
     frac.leftDelimiter = [self.leftDelimiter copyWithZone:zone];
     frac.rightDelimiter = [self.rightDelimiter copyWithZone:zone];
+    frac.fracStyle = self.fracStyle;
     return frac;
 }
 

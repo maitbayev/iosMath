@@ -1123,7 +1123,18 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 - (MTDisplay*) makeFraction:(MTFraction*) frac
 {
     // lay out the parts of the fraction
-    MTLineStyle fractionStyle = self.fractionStyle;
+    MTLineStyle fractionStyle;
+    switch (frac.fracStyle) {
+        case kMTFracStyleDisplay:
+            fractionStyle = kMTLineStyleText;
+            break;
+        case kMTFracStyleText:
+            fractionStyle = kMTLineStyleScript;
+            break;
+        default:
+            fractionStyle = self.fractionStyle;
+            break;
+    }
     MTMathListDisplay* numeratorDisplay = [MTTypesetter createLineForMathList:frac.numerator font:_font style:fractionStyle cramped:false];
     MTMathListDisplay* denominatorDisplay = [MTTypesetter createLineForMathList:frac.denominator font:_font style:fractionStyle cramped:true];
     

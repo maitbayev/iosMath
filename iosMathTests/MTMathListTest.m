@@ -386,7 +386,8 @@ _XCTPrimitiveAssertNotEqual(test, expression1, @#expression1, expression2, @#exp
     frac.denominator = list2;
     frac.leftDelimiter = @"a";
     frac.rightDelimiter = @"b";
-    
+    frac.fracStyle = kMTFracStyleDisplay;
+
     MTFraction* copy = [frac copy];
     [MTMathListTest checkAtomCopy:copy original:frac forTest:self];
     [MTMathListTest checkListCopy:copy.numerator original:frac.numerator forTest:self];
@@ -394,6 +395,7 @@ _XCTPrimitiveAssertNotEqual(test, expression1, @#expression1, expression2, @#exp
     XCTAssertFalse(copy.hasRule);
     XCTAssertEqualObjects(copy.leftDelimiter, @"a");
     XCTAssertEqualObjects(copy.rightDelimiter, @"b");
+    XCTAssertEqual(copy.fracStyle, kMTFracStyleDisplay);
 }
 
 - (void) testCopyRadical

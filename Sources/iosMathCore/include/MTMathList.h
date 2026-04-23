@@ -170,6 +170,13 @@ typedef NS_ENUM(NSUInteger, MTFontStyle)
 
 @end
 
+/** Controls how the fraction's children are sized, overriding the current rendering context. */
+typedef NS_ENUM(NSUInteger, MTFracStyleOverride) {
+    kMTFracStyleNormal = 0,  ///< follows the current context (\frac)
+    kMTFracStyleDisplay,     ///< forces display-style sizing (\dfrac)
+    kMTFracStyleText,        ///< forces text-style sizing (\tfrac)
+};
+
 /** An atom of type fraction. This atom has a numerator and denominator. */
 @interface MTFraction : MTMathAtom
 
@@ -192,6 +199,12 @@ typedef NS_ENUM(NSUInteger, MTFontStyle)
 @property (nonatomic, nullable) NSString* leftDelimiter;
 /** An optional delimiter for a fraction on the right. */
 @property (nonatomic, nullable) NSString* rightDelimiter;
+
+/** Controls how the fraction's numerator/denominator are sized.
+ - kMTFracStyleNormal: follows the current rendering context (\frac)
+ - kMTFracStyleDisplay: forces display-style sizing (\dfrac)
+ - kMTFracStyleText: forces text-style sizing (\tfrac) */
+@property (nonatomic) MTFracStyleOverride fracStyle;
 
 @end
 

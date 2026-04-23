@@ -97,7 +97,7 @@ quadratic formula example shown above.
 This is a list of formula types that the library currently supports:
 
 * Simple algebraic equations
-* Fractions and continued fractions
+* Fractions and continued fractions (\\frac, \\dfrac, \\tfrac)
 * Exponents and subscripts
 * Trigonometric formulae
 * Square roots and n-th roots
