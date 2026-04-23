@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1CC48E8D526E9958A3D45383 /* libPods-iosMathTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 33459E3F7CC9ECC36CCA7414 /* libPods-iosMathTests.a */; };
 		490465BF1D23DA8400F82033 /* MTTypesetterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 490465BE1D23DA8400F82033 /* MTTypesetterTest.m */; };
 		492EED0817DAEDD200939107 /* MTFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 492EECFA17DAED9000939107 /* MTFontManager.m */; };
 		492EED0917DAEDD200939107 /* MTFontMathTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 492EECF817DAED9000939107 /* MTFontMathTable.m */; };
@@ -72,8 +71,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		11BDFD1AB91580A33D83C75E /* libPods-iosMathExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iosMathExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		33459E3F7CC9ECC36CCA7414 /* libPods-iosMathTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iosMathTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		490465BE1D23DA8400F82033 /* MTTypesetterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTTypesetterTest.m; sourceTree = "<group>"; };
 		492EECF317DAED9000939107 /* MTMathListDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTMathListDisplay.h; sourceTree = "<group>"; };
 		492EECF417DAED9000939107 /* MTMathUILabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTMathUILabel.h; sourceTree = "<group>"; };
@@ -166,7 +163,6 @@
 			files = (
 				49965F1F17CBBA2700A555C5 /* UIKit.framework in Frameworks */,
 				49965F2017CBBA2700A555C5 /* Foundation.framework in Frameworks */,
-				1CC48E8D526E9958A3D45383 /* libPods-iosMathTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,8 +226,6 @@
 				49965F0117CBBA2700A555C5 /* Foundation.framework */,
 				49965F0317CBBA2700A555C5 /* CoreGraphics.framework */,
 				49A27B0218EBF5B30030B7EF /* CoreFoundation.framework */,
-				11BDFD1AB91580A33D83C75E /* libPods-iosMathExample.a */,
-				33459E3F7CC9ECC36CCA7414 /* libPods-iosMathTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -417,11 +411,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 49965F2E17CBBA2700A555C5 /* Build configuration list for PBXNativeTarget "iosMathExample" */;
 			buildPhases = (
-				E29EDA86FBD87D988339E97B /* [CP] Check Pods Manifest.lock */,
 				49965EF817CBBA2700A555C5 /* Sources */,
 				49965EF917CBBA2700A555C5 /* Frameworks */,
 				49965EFA17CBBA2700A555C5 /* Resources */,
-				C897D2526C33F372299D91F4 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -436,11 +428,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 49965F3117CBBA2700A555C5 /* Build configuration list for PBXNativeTarget "iosMathTests" */;
 			buildPhases = (
-				2A6BF4D73475A64FE2BB8DAD /* [CP] Check Pods Manifest.lock */,
 				49965F1717CBBA2700A555C5 /* Sources */,
 				49965F1817CBBA2700A555C5 /* Frameworks */,
 				49965F1917CBBA2700A555C5 /* Resources */,
-				C6253ABF539A9D25D25B1108 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -538,80 +528,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		2A6BF4D73475A64FE2BB8DAD /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-iosMathTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C6253ABF539A9D25D25B1108 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-iosMathTests/Pods-iosMathTests-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/iosMath-iOS6.0/mathFonts.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathFonts.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-iosMathTests/Pods-iosMathTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C897D2526C33F372299D91F4 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-iosMathExample/Pods-iosMathExample-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/iosMath-iOS9.0/mathFonts.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathFonts.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-iosMathExample/Pods-iosMathExample-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E29EDA86FBD87D988339E97B /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-iosMathExample-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4987307117D546800041B02B /* Sources */ = {
