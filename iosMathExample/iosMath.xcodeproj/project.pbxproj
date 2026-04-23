@@ -117,12 +117,12 @@
 		49DEC8041CED71C3000053CD /* MTFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTFont.h; sourceTree = "<group>"; };
 		49DEC8051CED71C3000053CD /* MTFont.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTFont.m; sourceTree = "<group>"; };
 		49DEC80B1CEF1028000053CD /* MTFont+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MTFont+Internal.h"; sourceTree = "<group>"; };
-		49DEC80F1CF3C69E000053CD /* xits-math.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "xits-math.plist"; path = "fonts/xits-math.plist"; sourceTree = SOURCE_ROOT; };
-		49DEC8101CF3C69E000053CD /* xits-math.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "xits-math.otf"; path = "fonts/xits-math.otf"; sourceTree = SOURCE_ROOT; };
-		49DEC8111CF3C69E000053CD /* texgyretermes-math.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "texgyretermes-math.plist"; path = "fonts/texgyretermes-math.plist"; sourceTree = SOURCE_ROOT; };
-		49DEC8121CF3C69E000053CD /* texgyretermes-math.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "texgyretermes-math.otf"; path = "fonts/texgyretermes-math.otf"; sourceTree = SOURCE_ROOT; };
-		49DEC8131CF3C69E000053CD /* latinmodern-math.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "latinmodern-math.plist"; path = "fonts/latinmodern-math.plist"; sourceTree = SOURCE_ROOT; };
-		49DEC8141CF3C69E000053CD /* latinmodern-math.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "latinmodern-math.otf"; path = "fonts/latinmodern-math.otf"; sourceTree = SOURCE_ROOT; };
+		49DEC80F1CF3C69E000053CD /* xits-math.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "xits-math.plist"; path = "../fonts/xits-math.plist"; sourceTree = SOURCE_ROOT; };
+		49DEC8101CF3C69E000053CD /* xits-math.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "xits-math.otf"; path = "../fonts/xits-math.otf"; sourceTree = SOURCE_ROOT; };
+		49DEC8111CF3C69E000053CD /* texgyretermes-math.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "texgyretermes-math.plist"; path = "../fonts/texgyretermes-math.plist"; sourceTree = SOURCE_ROOT; };
+		49DEC8121CF3C69E000053CD /* texgyretermes-math.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "texgyretermes-math.otf"; path = "../fonts/texgyretermes-math.otf"; sourceTree = SOURCE_ROOT; };
+		49DEC8131CF3C69E000053CD /* latinmodern-math.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "latinmodern-math.plist"; path = "../fonts/latinmodern-math.plist"; sourceTree = SOURCE_ROOT; };
+		49DEC8141CF3C69E000053CD /* latinmodern-math.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "latinmodern-math.otf"; path = "../fonts/latinmodern-math.otf"; sourceTree = SOURCE_ROOT; };
 		49DEC81B1CF3CD72000053CD /* View.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		49DEC8B51CF77B00000053CD /* MTMathListIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTMathListIndex.m; sourceTree = "<group>"; };
 		49DEC8B61CF77B00000053CD /* MTMathListIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTMathListIndex.h; sourceTree = "<group>"; };
@@ -184,7 +184,7 @@
 				4987307817D546800041B02B /* Supporting Files */,
 				D94FE3501B90DCA5002D11E2 /* IosMath.h */,
 			);
-			path = iosMath;
+			path = ../iosMath;
 			sourceTree = "<group>";
 		};
 		4987307817D546800041B02B /* Supporting Files */ = {
@@ -237,7 +237,7 @@
 				49B83EF717CF2A550014B739 /* example */,
 				49965F0617CBBA2700A555C5 /* Supporting Files */,
 			);
-			path = iosMathExample;
+			path = ../iosMathExample;
 			sourceTree = "<group>";
 		};
 		49965F0617CBBA2700A555C5 /* Supporting Files */ = {
@@ -261,7 +261,7 @@
 				490465BE1D23DA8400F82033 /* MTTypesetterTest.m */,
 				49965F2417CBBA2700A555C5 /* Supporting Files */,
 			);
-			path = iosMathTests;
+			path = ../iosMathTests;
 			sourceTree = "<group>";
 		};
 		49965F2417CBBA2700A555C5 /* Supporting Files */ = {
@@ -314,7 +314,7 @@
 				49DEC8141CF3C69E000053CD /* latinmodern-math.otf */,
 				49A27B0518EBF5B30030B7EF /* Supporting Files */,
 			);
-			path = MathFontBundle;
+			path = ../MathFontBundle;
 			sourceTree = "<group>";
 		};
 		49A27B0518EBF5B30030B7EF /* Supporting Files */ = {
@@ -477,7 +477,7 @@
 			);
 			mainGroup = 49965EF317CBBA2700A555C5;
 			packageReferences = (
-				86C187102F9ABB6600938A0D /* XCLocalSwiftPackageReference "../iosMath" */,
+				86C187102F9ABB6600938A0D /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = 49965EFD17CBBA2700A555C5 /* Products */;
 			projectDirPath = "";
@@ -728,7 +728,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T984FR9Q54;
-				INFOPLIST_FILE = "iosMathExample/iosMath-Info.plist";
+				INFOPLIST_FILE = "iosMath-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = rotpanda.MathChat.iosMathExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -744,7 +744,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T984FR9Q54;
-				INFOPLIST_FILE = "iosMathExample/iosMath-Info.plist";
+				INFOPLIST_FILE = "iosMath-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = rotpanda.MathChat.iosMathExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -757,7 +757,7 @@
 		49965F3217CBBA2700A555C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				INFOPLIST_FILE = "iosMathTests/iosMathTests-Info.plist";
+				INFOPLIST_FILE = "../iosMathTests/iosMathTests-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "MathChat.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -766,7 +766,7 @@
 		49965F3317CBBA2700A555C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				INFOPLIST_FILE = "iosMathTests/iosMathTests-Info.plist";
+				INFOPLIST_FILE = "../iosMathTests/iosMathTests-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "MathChat.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -790,7 +790,7 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "MathFontBundle/MathFontBundle-Info.plist";
+				INFOPLIST_FILE = "../MathFontBundle/MathFontBundle-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_BUNDLE_IDENTIFIER = "Tactile-Learning.${PRODUCT_NAME:rfc1034identifier}";
@@ -817,7 +817,7 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "MathFontBundle/MathFontBundle-Info.plist";
+				INFOPLIST_FILE = "../MathFontBundle/MathFontBundle-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_BUNDLE_IDENTIFIER = "Tactile-Learning.${PRODUCT_NAME:rfc1034identifier}";
@@ -879,16 +879,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		86C187102F9ABB6600938A0D /* XCLocalSwiftPackageReference "../iosMath" */ = {
+		86C187102F9ABB6600938A0D /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../iosMath;
+			relativePath = ..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		86C187112F9ABB7B00938A0D /* iosMath */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 86C187102F9ABB6600938A0D /* XCLocalSwiftPackageReference "../iosMath" */;
+			package = 86C187102F9ABB6600938A0D /* XCLocalSwiftPackageReference ".." */;
 			productName = iosMath;
 		};
 /* End XCSwiftPackageProductDependency section */
