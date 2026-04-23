@@ -43,7 +43,7 @@ let package = Package(
       dependencies: ["iosMath", "iosMathCore"],
       path: "iosMathTests",
       cSettings: [
-        .headerSearchPath("../iosMath/render"),
+        .headerSearchPath("../iosMath/render")
       ]
     ),
   ]
