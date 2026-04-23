@@ -19,7 +19,6 @@ let package = Package(
     .target(
       name: "iosMathCore",
       dependencies: [],
-      path: "./iosMath/lib",
       publicHeadersPath: ""
     ),
     .target(
