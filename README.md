@@ -1,9 +1,6 @@
 # iosMath
 
 [![Build Status](http://img.shields.io/travis/kostub/iosMath.svg?style=flat)](https://travis-ci.org/kostub/iosMath)
-[![Version](https://img.shields.io/cocoapods/v/iosMath.svg?style=flat)](http://cocoapods.org/pods/iosMath)
-[![License](https://img.shields.io/cocoapods/l/iosMath.svg?style=flat)](http://cocoapods.org/pods/iosMath)
-[![Platform](https://img.shields.io/cocoapods/p/iosMath.svg?style=flat)](http://cocoapods.org/pods/iosMath)
 
 `iosMath` is a library for displaying beautifully rendered math equations
 in iOS and MacOS applications. It typesets formulae written using the LaTeX in
@@ -62,14 +59,6 @@ dependencies: [
 ```
 
 You can also follow the [tutorial from developer.apple.com](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app).
-
-### Cocoapods
-
-iosMath is available through [CocoaPods](http://cocoapods.org). To install
-it:
-
-1. Add a entry for iosMath to your Podfile: `pod 'iosMath'`.
-2. Install the pod by running `pod install`.
 
 ### Static library
 
@@ -132,11 +121,11 @@ This is a list of formula types that the library currently supports:
 
 There is a sample app included in this project that shows how to use the
 app and the different equations that you can render. To run the sample
-app, clone the repository, and run `pod install` first. Then on iOS run the
+app, clone the repository and open `iosMath.xcworkspace`. On iOS run the
 __iosMathExample__ app. For MacOS run the __MacOSMath__ app.
 
-For a Swift/SwiftUI sample that consumes iosMath via Swift Package Manager
-(no CocoaPods required), open `iosMathSwiftUIExample/iosMathSwiftUIExample.xcodeproj`
+For a Swift/SwiftUI sample that consumes iosMath via Swift Package Manager,
+open `iosMathSwiftUIExample/iosMathSwiftUIExample.xcodeproj`
 and run the __iosMathSwiftUIExample__ scheme. The project references the
 iosMath package at the repository root as a local Swift package.
 
