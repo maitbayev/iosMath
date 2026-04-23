@@ -15,7 +15,9 @@ struct NamedColor: Identifiable, Hashable {
 }
 
 private let palette: [NamedColor] = [
+  NamedColor(name: "Primary", color: .primary, uiColor: .label),
   NamedColor(name: "Black", color: .black, uiColor: .black),
+  NamedColor(name: "White", color: .white, uiColor: .white),
   NamedColor(name: "Blue", color: .blue, uiColor: .blue),
   NamedColor(name: "Red", color: .red, uiColor: .red),
   NamedColor(name: "Green", color: .green, uiColor: .green),
@@ -28,10 +30,10 @@ struct ContentView: View {
   @State private var renderedLatex: String = #"x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}"#
 
   var body: some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: 16) {
-        controlsSection
-        liveEditorSection
+    VStack(alignment: .leading, spacing: 16) {
+      controlsSection
+      liveEditorSection
+      ScrollView {
         sectionHeader("Demo formulae")
         ForEach(Formulae.demoFormulae) { item in
           formulaRow(item)
@@ -41,15 +43,15 @@ struct ContentView: View {
           formulaRow(item)
         }
       }
-      .padding(.horizontal)
-      .padding(.bottom, 24)
+      .padding(.top)
     }
+    .padding(.horizontal)
+    .padding(.bottom, 24)
   }
 
   private var controlsSection: some View {
     VStack(alignment: .leading, spacing: 8) {
       HStack {
-        Text("Font").frame(width: 60, alignment: .leading)
         Picker("Font", selection: $fontFace) {
           ForEach(MathFontFace.allCases) { face in
             Text(face.rawValue).tag(face)
@@ -58,7 +60,6 @@ struct ContentView: View {
         .pickerStyle(.menu)
       }
       HStack {
-        Text("Color").frame(width: 60, alignment: .leading)
         Picker("Color", selection: $selectedColor) {
           ForEach(palette) { entry in
             Text(entry.name).tag(entry)
@@ -76,7 +77,7 @@ struct ContentView: View {
   }
 
   private var liveEditorSection: some View {
-    VStack(alignment: .leading, spacing: 8) {
+    VStack(alignment: .leading, spacing: 16) {
       sectionHeader("Live LaTeX")
       MathView(
         latex: renderedLatex,
@@ -84,14 +85,15 @@ struct ContentView: View {
         fontSize: 20,
         textColor: selectedColor.uiColor
       )
+      .padding(8)
       .frame(height: 80)
       .background(Color(UXColor.secondarySystemFill))
       .cornerRadius(8)
 
       TextField("Enter LaTeX", text: $latexInput, axis: .vertical)
+        .padding()
         .textFieldStyle(.roundedBorder)
         .autocorrectionDisabled(true)
-        //        .textInputAutocapitalization(.never)
         .lineLimit(1...4)
         .onSubmit { renderedLatex = latexInput }
 
