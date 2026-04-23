@@ -8,21 +8,26 @@ let package = Package(
   platforms: [.iOS(.v10), .macOS(.v11)],
   products: [
     .library(
+      name: "iosMathCore",
+      targets: ["iosMathCore"]),
+    .library(
       name: "iosMath",
-      targets: ["iosMath"])
+      targets: ["iosMath"]),
   ],
   dependencies: [],
   targets: [
     .target(
+      name: "iosMathCore"
+    ),
+    .target(
       name: "iosMath",
-      dependencies: [],
+      dependencies: ["iosMathCore"],
       path: "./iosMath",
       resources: [
         .process("fonts")
       ],
       cSettings: [
         .headerSearchPath("./render"),
-        .headerSearchPath("./lib"),
         .headerSearchPath("./render/internal"),
         // Prevent NSAssert from crashing the app in release builds
         .define("NS_BLOCK_ASSERTIONS", to: "1", .when(configuration: .release)),
@@ -30,10 +35,10 @@ let package = Package(
     ),
     .testTarget(
       name: "iosMathTests",
-      dependencies: ["iosMath"],
+      dependencies: ["iosMath", "iosMathCore"],
       path: "iosMathTests",
       cSettings: [
-        .headerSearchPath("../iosMath/render"),
+        .headerSearchPath("../iosMath/render")
       ]
     ),
   ]
