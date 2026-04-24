@@ -33,6 +33,14 @@ let package = Package(
         .define("NS_BLOCK_ASSERTIONS", to: "1", .when(configuration: .release)),
       ]
     ),
+    .target(
+      name: "iosMathCoreTestSupport",
+      path: "Tests/iosMathCoreTestSupport"
+    ),
+    .testTarget(
+      name: "iosMathCoreTests",
+      dependencies: ["iosMathCore", "iosMathCoreTestSupport"]
+    ),
     .testTarget(
       name: "iosMathTests",
       dependencies: ["iosMath", "iosMathCore"],
