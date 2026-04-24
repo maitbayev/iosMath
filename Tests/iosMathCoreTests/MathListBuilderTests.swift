@@ -400,6 +400,7 @@ struct MathListBuilderTests {
     #expect(frac.hasRule)
     #expect(frac.rightDelimiter == nil)
     #expect(frac.leftDelimiter == nil)
+    #expect(frac.fracStyle == .normal)
 
     let numer = frac.numerator
     #expect(numer.atoms.count == 1)
