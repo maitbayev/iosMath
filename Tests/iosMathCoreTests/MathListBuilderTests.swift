@@ -400,6 +400,7 @@ struct MathListBuilderTests {
     #expect(frac.hasRule)
     #expect(frac.rightDelimiter == nil)
     #expect(frac.leftDelimiter == nil)
+    #expect(frac.fracStyle == .normal)
 
     let numer = frac.numerator
     #expect(numer.atoms.count == 1)
@@ -412,6 +413,54 @@ struct MathListBuilderTests {
     #expect(denom.atoms[0].nucleus == "c")
 
     #expect(MTMathListBuilder.mathList(toString: list) == "\\frac{1}{c}")
+  }
+
+  @Test func dfrac() throws {
+    let list = try #require(MTMathListBuilder(string: "\\dfrac1c").build())
+    #expect(list.atoms.count == 1)
+    let frac = try #require(list.atoms[0] as? MTFraction)
+    #expect(frac.type == .fraction)
+    #expect(frac.nucleus == "")
+    #expect(frac.hasRule)
+    #expect(frac.rightDelimiter == nil)
+    #expect(frac.leftDelimiter == nil)
+    #expect(frac.fracStyle == .display)
+
+    let numer = frac.numerator
+    #expect(numer.atoms.count == 1)
+    #expect(numer.atoms[0].type == .number)
+    #expect(numer.atoms[0].nucleus == "1")
+
+    let denom = frac.denominator
+    #expect(denom.atoms.count == 1)
+    #expect(denom.atoms[0].type == .variable)
+    #expect(denom.atoms[0].nucleus == "c")
+
+    #expect(MTMathListBuilder.mathList(toString: list) == "\\dfrac{1}{c}")
+  }
+
+  @Test func tfrac() throws {
+    let list = try #require(MTMathListBuilder(string: "\\tfrac1c").build())
+    #expect(list.atoms.count == 1)
+    let frac = try #require(list.atoms[0] as? MTFraction)
+    #expect(frac.type == .fraction)
+    #expect(frac.nucleus == "")
+    #expect(frac.hasRule)
+    #expect(frac.rightDelimiter == nil)
+    #expect(frac.leftDelimiter == nil)
+    #expect(frac.fracStyle == .text)
+
+    let numer = frac.numerator
+    #expect(numer.atoms.count == 1)
+    #expect(numer.atoms[0].type == .number)
+    #expect(numer.atoms[0].nucleus == "1")
+
+    let denom = frac.denominator
+    #expect(denom.atoms.count == 1)
+    #expect(denom.atoms[0].type == .variable)
+    #expect(denom.atoms[0].nucleus == "c")
+
+    #expect(MTMathListBuilder.mathList(toString: list) == "\\tfrac{1}{c}")
   }
 
   @Test func fracInFrac() throws {
