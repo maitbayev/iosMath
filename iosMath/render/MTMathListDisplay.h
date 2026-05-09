@@ -18,7 +18,7 @@
 #import "MTConfig.h"
 
 #import "MTFont.h"
-#import "MTMathList.h"
+@import iosMathCore;
 
 NS_ASSUME_NONNULL_BEGIN
 

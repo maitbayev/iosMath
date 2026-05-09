@@ -12,7 +12,7 @@
 #import "MTMathUILabel.h"
 #import "MTMathListDisplay.h"
 #import "MTFontManager.h"
-#import "MTMathListBuilder.h"
+@import iosMathCore;
 #import "MTTypesetter.h"
 
 @implementation MTMathUILabel {
@@ -152,9 +152,9 @@
 {
     switch (_labelMode) {
         case kMTMathUILabelModeDisplay:
-            return kMTLineStyleDisplay;
+            return MTLineStyleDisplay;
         case kMTMathUILabelModeText:
-            return kMTLineStyleText;
+            return MTLineStyleText;
     }
 }
 
