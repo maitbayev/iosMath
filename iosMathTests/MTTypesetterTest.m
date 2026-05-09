@@ -11,7 +11,8 @@
 #import "MTTypesetter.h"
 #import "MTFontManager.h"
 #import "MTMathListDisplay.h"
-@import iosMathCore;
+#import "MTMathAtomFactory.h"
+#import "MTMathListBuilder.h"
 
 @interface MTTypesetterTest : XCTestCase
 
@@ -34,7 +35,7 @@
 - (void)testSimpleVariable {
     MTMathList* mathList = [[MTMathList alloc] init];
     [mathList addAtom:[MTMathAtomFactory atomForCharacter:'x']];
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -66,7 +67,7 @@
 - (void)testMultipleVariables {
     MTMathList* mathList = [MTMathAtomFactory mathListForCharacters:@"xyzw"];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -97,7 +98,7 @@
 - (void)testVariablesAndNumbers {
     MTMathList* mathList = [MTMathAtomFactory mathListForCharacters:@"xy2w"];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -128,7 +129,7 @@
 - (void)testEquationWithOperatorsAndRelations {
     MTMathList* mathList = [MTMathAtomFactory mathListForCharacters:@"2x+3=y"];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -173,7 +174,7 @@
     x.superScript = supersc;
     [mathList addAtom:x];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -223,7 +224,7 @@
     x.subScript = subsc;
     [mathList addAtom:x];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -276,7 +277,7 @@
     x.superScript = supersc;
     [mathList addAtom:x];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -345,7 +346,7 @@
     rad.radicand = radicand;
     [mathList addAtom:rad];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -397,7 +398,7 @@
     rad.degree = degree;
     [mathList addAtom:rad];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -466,7 +467,7 @@
     frac.denominator = denom;
     [mathList addAtom:frac];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -535,7 +536,7 @@
     frac.denominator = denom;
     [mathList addAtom:frac];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -606,7 +607,7 @@
     frac.rightDelimiter = @")";
     [mathList addAtom:frac];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -694,7 +695,7 @@
     [mathList addAtom:[MTMathAtomFactory atomForLatexSymbolName:@"sin"]];
     [mathList addAtom:[MTMathAtomFactory atomForCharacter:'x']];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -732,7 +733,7 @@
     [mathList addAtom:[MTMathAtomFactory atomForLatexSymbolName:@"int"]];
     [mathList addAtom:[MTMathAtomFactory atomForCharacter:'x']];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -773,7 +774,7 @@
     [mathList addAtom:op];
     [mathList addAtom:[MTMathAtomFactory atomForCharacter:'x']];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -847,9 +848,9 @@
     op.subScript = [[MTMathList alloc] init];
     [op.subScript addAtom:[MTMathAtomFactory atomForLatexSymbolName:@"infty"]];
     [mathList addAtom:op];
-    [mathList addAtom:[MTMathAtom atomWithType:MTMathAtomTypeVariable value:@"x"]];
+    [mathList addAtom:[MTMathAtom atomWithType:kMTMathAtomVariable value:@"x"]];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -905,9 +906,9 @@
     op.subScript = [[MTMathList alloc] init];
     [op.subScript addAtom:[MTMathAtomFactory atomForCharacter:'0']];
     [mathList addAtom:op];
-    [mathList addAtom:[MTMathAtom atomWithType:MTMathAtomTypeVariable value:@"x"]];
+    [mathList addAtom:[MTMathAtom atomWithType:kMTMathAtomVariable value:@"x"]];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -976,13 +977,13 @@
     [innerList addAtom:[MTMathAtomFactory atomForCharacter:'x']];
     MTInner* inner = [[MTInner alloc] init];
     inner.innerList = innerList;
-    inner.leftBoundary = [MTMathAtom atomWithType:MTMathAtomTypeBoundary value:@"("];
-    inner.rightBoundary = [MTMathAtom atomWithType:MTMathAtomTypeBoundary value:@")"];
+    inner.leftBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:@"("];
+    inner.rightBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:@")"];
     
     MTMathList* mathList = [[MTMathList alloc] init];
     [mathList addAtom:inner];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -1045,7 +1046,7 @@
     over.innerList = inner;
     [mathList addAtom:over];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -1093,7 +1094,7 @@
     under.innerList = inner;
     [mathList addAtom:under];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -1139,7 +1140,7 @@
     [mathList addAtom:[[MTMathSpace alloc] initWithSpace:9]];
     [mathList addAtom:[MTMathAtomFactory atomForCharacter:'y']];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -1172,7 +1173,7 @@
     [noSpace addAtom:[MTMathAtomFactory atomForCharacter:'x']];
     [noSpace addAtom:[MTMathAtomFactory atomForCharacter:'y']];
     
-    MTMathListDisplay* noSpaceDisplay = [MTTypesetter createLineForMathList:noSpace font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* noSpaceDisplay = [MTTypesetter createLineForMathList:noSpace font:self.font style:kMTLineStyleDisplay];
     
     // dimensions
     XCTAssertEqualWithAccuracy(display.ascent, noSpaceDisplay.ascent, 0.01);
@@ -1184,7 +1185,7 @@
 - (void) testLargeRadicalDescent
 {
     MTMathList* list = [MTMathListBuilder buildFromString:@"\\sqrt{\\frac{\\sqrt{\\frac{1}{2}} + 3}{\\sqrt{5}^x}}"];
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list font:self.font style:kMTLineStyleDisplay];
     
     // dimensions
     XCTAssertEqualWithAccuracy(display.ascent, 49.16, 0.01);
@@ -1216,15 +1217,15 @@
     [table setCell:c22 forRow:2 column:2];
     
     // alignments
-    [table setAlignment:MTColumnAlignmentRight forColumn:0];
-    [table setAlignment:MTColumnAlignmentLeft forColumn:2];
+    [table setAlignment:kMTColumnAlignmentRight forColumn:0];
+    [table setAlignment:kMTColumnAlignmentLeft forColumn:2];
     
     table.interColumnSpacing = 18; // 1 quad
     
     MTMathList* mathList = [[MTMathList alloc] init];
     [mathList addAtom:table];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -1280,14 +1281,14 @@
         MTMathList* list = [[MTMathList alloc] init];
         MTMathAtom* atom = [MTMathAtomFactory atomForLatexSymbolName:symName];
         XCTAssertNotNil(atom);
-        if (atom.type >= MTMathAtomTypeBoundary) {
+        if (atom.type >= kMTMathAtomBoundary) {
             // Skip these types as they aren't symbols.
             continue;
         }
         
         [list addAtom:atom];
         
-        MTMathListDisplay* display = [MTTypesetter createLineForMathList:list font:self.font style:MTLineStyleDisplay];
+        MTMathListDisplay* display = [MTTypesetter createLineForMathList:list font:self.font style:kMTLineStyleDisplay];
         XCTAssertNotNil(display, @"Symbol %@", symName);
         
         XCTAssertEqual(display.type, kMTLinePositionRegular);
@@ -1298,7 +1299,7 @@
         XCTAssertEqual(display.subDisplays.count, 1, @"Symbol %@", symName);
         
         MTDisplay* sub0 = display.subDisplays[0];
-        if (atom.type == MTMathAtomTypeLargeOperator && atom.nucleus.length == 1) {
+        if (atom.type == kMTMathAtomLargeOperator && atom.nucleus.length == 1) {
             // These large operators are rendered differently;
             XCTAssertTrue([sub0 isKindOfClass:[MTGlyphDisplay class]]);
             MTGlyphDisplay* glyph = (MTGlyphDisplay*) sub0;
@@ -1309,7 +1310,7 @@
             XCTAssertTrue([sub0 isKindOfClass:[MTCTLineDisplay class]], @"Symbol %@", symName);
             MTCTLineDisplay* line = (MTCTLineDisplay*) sub0;
             XCTAssertEqual(line.atoms.count, 1);
-            if (atom.type != MTMathAtomTypeVariable) {
+            if (atom.type != kMTMathAtomVariable) {
                 XCTAssertEqualObjects(line.attributedString.string, atom.nucleus);
             }
             XCTAssertTrue(CGPointEqualToPoint(line.position, CGPointZero));
@@ -1335,16 +1336,16 @@
 - (void) testAtomWithAllFontStyles:(MTMathAtom*) atom
 {
     NSArray* fontStyles = @[
-                            @(MTFontStyleDefault),
-                            @(MTFontStyleRoman),
-                            @(MTFontStyleBold),
-                            @(MTFontStyleCaligraphic),
-                            @(MTFontStyleTypewriter),
-                            @(MTFontStyleItalic),
-                            @(MTFontStyleSansSerif),
-                            @(MTFontStyleFraktur),
-                            @(MTFontStyleBlackboard),
-                            @(MTFontStyleBoldItalic),
+                            @(kMTFontStyleDefault),
+                            @(kMTFontStyleRoman),
+                            @(kMTFontStyleBold),
+                            @(kMTFontStyleCaligraphic),
+                            @(kMTFontStyleTypewriter),
+                            @(kMTFontStyleItalic),
+                            @(kMTFontStyleSansSerif),
+                            @(kMTFontStyleFraktur),
+                            @(kMTFontStyleBlackboard),
+                            @(kMTFontStyleBoldItalic),
                             ];
     for (NSNumber* fontStyle in fontStyles) {
         NSInteger style = fontStyle.integerValue;
@@ -1352,7 +1353,7 @@
         copy.fontStyle = style;
         MTMathList* list = [MTMathList mathListWithAtoms:copy, nil];
 
-        MTMathListDisplay* display = [MTTypesetter createLineForMathList:list font:self.font style:MTLineStyleDisplay];
+        MTMathListDisplay* display = [MTTypesetter createLineForMathList:list font:self.font style:kMTLineStyleDisplay];
         XCTAssertNotNil(display, @"Symbol %@", atom.nucleus);
 
         XCTAssertEqual(display.type, kMTLinePositionRegular);
@@ -1389,7 +1390,7 @@
     for (NSString* symName in allSymbols) {
         MTMathAtom* atom = [MTMathAtomFactory atomForLatexSymbolName:symName];
         XCTAssertNotNil(atom);
-        if (atom.type != MTMathAtomTypeVariable) {
+        if (atom.type != kMTMathAtomVariable) {
             // Skip these types as we are only interested in variables.
             continue;
         }
@@ -1406,13 +1407,13 @@
 {
     MTFraction* frac = [MTMathAtomFactory fractionWithNumeratorStr:@"1" denominatorStr:@"2"];
     MTMathList* list = [MTMathList mathListWithAtoms:frac, nil];
-    MTMathAtom* style = [[MTMathStyle alloc] initWithStyle:MTLineStyleText];
+    MTMathAtom* style = [[MTMathStyle alloc] initWithStyle:kMTLineStyleText];
     MTMathList* textList = [MTMathList mathListWithAtoms:style, frac, nil];
     
     // This should make the display same as text.
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:textList font:self.font style:MTLineStyleDisplay];
-    MTMathListDisplay* textDisplay = [MTTypesetter createLineForMathList:list font:self.font style:MTLineStyleText];
-    MTMathListDisplay* originalDisplay = [MTTypesetter createLineForMathList:list font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:textList font:self.font style:kMTLineStyleDisplay];
+    MTMathListDisplay* textDisplay = [MTTypesetter createLineForMathList:list font:self.font style:kMTLineStyleText];
+    MTMathListDisplay* originalDisplay = [MTTypesetter createLineForMathList:list font:self.font style:kMTLineStyleDisplay];
     
     // Display should be the same as rendering the fraction in text style.
     XCTAssertEqual(display.ascent, textDisplay.ascent);
@@ -1428,13 +1429,13 @@
 - (void) testStyleMiddle
 {
     MTMathAtom* atom1 = [MTMathAtomFactory atomForCharacter:'x'];
-    MTMathAtom* style1 = [[MTMathStyle alloc] initWithStyle:MTLineStyleScript];
+    MTMathAtom* style1 = [[MTMathStyle alloc] initWithStyle:kMTLineStyleScript];
     MTMathAtom* atom2 = [MTMathAtomFactory atomForCharacter:'y'];
-    MTMathAtom* style2 = [[MTMathStyle alloc] initWithStyle:MTLineStyleScriptScript];
+    MTMathAtom* style2 = [[MTMathStyle alloc] initWithStyle:kMTLineStyleScriptScript];
     MTMathAtom* atom3 = [MTMathAtomFactory atomForCharacter:'z'];
     MTMathList* list = [MTMathList mathListWithAtoms:atom1, style1, atom2, style2, atom3, nil];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -1477,7 +1478,7 @@
     accent.innerList = inner;
     [mathList addAtom:accent];
 
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));
@@ -1529,7 +1530,7 @@
     accent.innerList = [MTMathAtomFactory mathListForCharacters:@"xyzw"];
     [mathList addAtom:accent];
 
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:MTLineStyleDisplay];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:mathList font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     XCTAssertEqual(display.type, kMTLinePositionRegular);
     XCTAssertTrue(CGPointEqualToPoint(display.position, CGPointZero));

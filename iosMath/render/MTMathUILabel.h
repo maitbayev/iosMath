@@ -15,7 +15,7 @@
 #import "MTConfig.h"
 
 #import "MTFont.h"
-@import iosMathCore;
+#import "MTMathList.h"
 #import "MTMathListDisplay.h"
 
 /**

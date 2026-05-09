@@ -11,6 +11,9 @@ let package = Package(
       name: "iosMathCore",
       targets: ["iosMathCore"]),
     .library(
+      name: "iosMathCoreSwift",
+      targets: ["iosMathCoreSwift"]),
+    .library(
       name: "iosMath",
       targets: ["iosMath"]),
   ],
@@ -18,6 +21,9 @@ let package = Package(
   targets: [
     .target(
       name: "iosMathCore"
+    ),
+    .target(
+      name: "iosMathCoreSwift"
     ),
     .target(
       name: "iosMath",

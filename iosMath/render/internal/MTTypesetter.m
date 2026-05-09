@@ -11,7 +11,7 @@
 #import "MTTypesetter.h"
 #import "MTFont+Internal.h"
 #import "MTMathListDisplayInternal.h"
-@import iosMathCore;
+#import "MTUnicode.h"
 
 #pragma mark Inter Element Spacing
 
@@ -47,27 +47,27 @@ NSArray* getInterElementSpaces() {
 // Get's the index for the given type. If row is true, the index is for the row (i.e. left element) otherwise it is for the column (right element)
 NSUInteger getInterElementSpaceArrayIndexForType(MTMathAtomType type, BOOL row) {
     switch (type) {
-        case MTMathAtomTypeColor:
-        case MTMathAtomTypeColorbox:
-        case MTMathAtomTypeOrdinary:
-        case MTMathAtomTypePlaceholder:   // A placeholder is treated as ordinary
+        case kMTMathAtomColor:
+        case kMTMathAtomColorbox:
+        case kMTMathAtomOrdinary:
+        case kMTMathAtomPlaceholder:   // A placeholder is treated as ordinary
             return 0;
-        case MTMathAtomTypeLargeOperator:
+        case kMTMathAtomLargeOperator:
             return 1;
-        case MTMathAtomTypeBinaryOperator:
+        case kMTMathAtomBinaryOperator:
             return 2;
-        case MTMathAtomTypeRelation:
+        case kMTMathAtomRelation:
             return 3;
-        case MTMathAtomTypeOpen:
+        case kMTMathAtomOpen:
             return 4;
-        case MTMathAtomTypeClose:
+        case kMTMathAtomClose:
             return 5;
-        case MTMathAtomTypePunctuation:
+        case kMTMathAtomPunctuation:
             return 6;
-        case MTMathAtomTypeFraction:  // Fraction and inner are treated the same.
-        case MTMathAtomTypeInner:
+        case kMTMathAtomFraction:  // Fraction and inner are treated the same.
+        case kMTMathAtomInner:
             return 7;
-        case MTMathAtomTypeRadical: {
+        case kMTMathAtomRadical: {
             if (row) {
                 // Radicals have inter element spaces only when on the left side.
                 // Note: This is a departure from latex but we don't want \sqrt{4}4 to look weird so we put a space in between.
@@ -373,34 +373,34 @@ UTF32Char getBlackboard(unichar ch) {
 static UTF32Char styleCharacter(unichar ch, MTFontStyle fontStyle)
 {
     switch (fontStyle) {
-        case MTFontStyleDefault:
+        case kMTFontStyleDefault:
             return getDefaultStyle(ch);
             
-        case MTFontStyleRoman:
+        case kMTFontStyleRoman:
             return ch;
             
-        case MTFontStyleBold:
+        case kMTFontStyleBold:
             return getBold(ch);
             
-        case MTFontStyleItalic:
+        case kMTFontStyleItalic:
             return getItalicized(ch);
             
-        case MTFontStyleBoldItalic:
+        case kMTFontStyleBoldItalic:
             return getBoldItalic(ch);
             
-        case MTFontStyleCaligraphic:
+        case kMTFontStyleCaligraphic:
             return getCaligraphic(ch);
             
-        case MTFontStyleTypewriter:
+        case kMTFontStyleTypewriter:
             return getTypewriter(ch);
             
-        case MTFontStyleSansSerif:
+        case kMTFontStyleSansSerif:
             return getSansSerif(ch);
             
-        case MTFontStyleFraktur:
+        case kMTFontStyleFraktur:
             return getFraktur(ch);
             
-        case MTFontStyleBlackboard:
+        case kMTFontStyleBlackboard:
             return getBlackboard(ch);
             
         default:
@@ -508,22 +508,22 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
     NSMutableArray* preprocessed = [NSMutableArray arrayWithCapacity:ml.atoms.count];
     MTMathAtom* prevNode = nil;
     for (MTMathAtom *atom in ml.atoms) {
-        if (atom.type == MTMathAtomTypeVariable || atom.type == MTMathAtomTypeNumber) {
+        if (atom.type == kMTMathAtomVariable || atom.type == kMTMathAtomNumber) {
             // These are not a TeX type nodes. TeX does this during parsing the input.
             // switch to using the font specified in the atom
             NSString* newFont = changeFont(atom.nucleus, atom.fontStyle);
             // We convert it to ordinary
-            atom.type = MTMathAtomTypeOrdinary;
+            atom.type = kMTMathAtomOrdinary;
             atom.nucleus = newFont;
-        } else if (atom.type == MTMathAtomTypeUnaryOperator) {
+        } else if (atom.type == kMTMathAtomUnaryOperator) {
             // TeX treats these as Ordinary. So will we.
-            atom.type = MTMathAtomTypeOrdinary;
+            atom.type = kMTMathAtomOrdinary;
         }
         
-        if (atom.type == MTMathAtomTypeOrdinary) {
+        if (atom.type == kMTMathAtomOrdinary) {
             // This is Rule 14 to merge ordinary characters.
             // combine ordinary atoms together
-            if (prevNode && prevNode.type == MTMathAtomTypeOrdinary && !prevNode.subScript && !prevNode.superScript) {
+            if (prevNode && prevNode.type == kMTMathAtomOrdinary && !prevNode.subScript && !prevNode.superScript) {
                 [prevNode fuse:atom];
                 // skip the current node, we are done here.
                 continue;
@@ -542,14 +542,14 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 {
     CGFloat original = font.fontSize;
     switch (style) {
-        case MTLineStyleDisplay:
-        case MTLineStyleText:
+        case kMTLineStyleDisplay:
+        case kMTLineStyleText:
             return original;
             
-        case MTLineStyleScript:
+        case kMTLineStyleScript:
             return original * font.mathTable.scriptScaleDown;
             
-        case MTLineStyleScriptScript:
+        case kMTLineStyleScriptScript:
             return original * font.mathTable.scriptScriptScaleDown;
     }
 }
@@ -566,7 +566,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
         interElementSpace = [self getInterElementSpace:prevNode.type right:type];
     } else if (_spaced) {
         // For the first atom of a spaced list, treat it as if it is preceded by an open.
-        interElementSpace = [self getInterElementSpace:MTMathAtomTypeOpen right:type];
+        interElementSpace = [self getInterElementSpace:kMTMathAtomOpen right:type];
     }
     _currentPosition.x += interElementSpace;
 }
@@ -579,18 +579,18 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
     MTMathAtomType lastType = 0;
     for (MTMathAtom* atom in preprocessed) {
         switch (atom.type) {
-            case MTMathAtomTypeNumber:
-            case MTMathAtomTypeVariable:
-            case MTMathAtomTypeUnaryOperator:
+            case kMTMathAtomNumber:
+            case kMTMathAtomVariable:
+            case kMTMathAtomUnaryOperator:
                 // These should never appear as they should have been removed by preprocessing
                 NSAssert(NO, @"These types should never show here as they are removed by preprocessing.");
                 break;
                 
-            case MTMathAtomTypeBoundary:
+            case kMTMathAtomBoundary:
                 NSAssert(NO, @"A boundary atom should never be inside a mathlist.");
                 break;
                 
-            case MTMathAtomTypeSpace: {
+            case kMTMathAtomSpace: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
@@ -604,7 +604,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 continue;
             }
                 
-            case MTMathAtomTypeStyle: {
+            case kMTMathAtomStyle: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
@@ -616,7 +616,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 continue;
             }
                 
-            case MTMathAtomTypeColor: {
+            case kMTMathAtomColor: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
@@ -630,7 +630,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 break;
             }
                 
-            case MTMathAtomTypeColorbox: {
+            case kMTMathAtomColorbox: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
@@ -645,18 +645,18 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 break;
             }
                 
-            case MTMathAtomTypeRadical: {
+            case kMTMathAtomRadical: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
                 }
                 MTRadical* rad = (MTRadical*) atom;
                 // Radicals are considered as Ord in rule 16.
-                [self addInterElementSpace:prevNode currentType:MTMathAtomTypeOrdinary];
+                [self addInterElementSpace:prevNode currentType:kMTMathAtomOrdinary];
                 MTRadicalDisplay* displayRad = [self makeRadical:rad.radicand range:rad.indexRange];
                 if (rad.degree) {
                     // add the degree to the radical
-                    MTMathListDisplay* degree = [MTTypesetter createLineForMathList:rad.degree font:_font style:MTLineStyleScriptScript];
+                    MTMathListDisplay* degree = [MTTypesetter createLineForMathList:rad.degree font:_font style:kMTLineStyleScriptScript];
                     [displayRad setDegree:degree fontMetrics:_styleFont.mathTable];
                 }
                 [_displayAtoms addObject:displayRad];
@@ -667,11 +667,11 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                     [self makeScripts:atom display:displayRad index:rad.indexRange.location delta:0];
                 }
                 // change type to ordinary
-                //atom.type = MTMathAtomTypeOrdinary;
+                //atom.type = kMTMathAtomOrdinary;
                 break;
             }
                 
-            case MTMathAtomTypeFraction: {
+            case kMTMathAtomFraction: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
@@ -688,7 +688,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 break;
             }
                 
-            case MTMathAtomTypeLargeOperator: {
+            case kMTMathAtomLargeOperator: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
@@ -700,7 +700,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 break;
             }
                 
-            case MTMathAtomTypeInner: {
+            case kMTMathAtomInner: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
@@ -718,14 +718,14 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 break;
             }
                 
-            case MTMathAtomTypeUnderline: {
+            case kMTMathAtomUnderline: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
                 }
                 // Underline is considered as Ord in rule 16.
-                [self addInterElementSpace:prevNode currentType:MTMathAtomTypeOrdinary];
-                atom.type = MTMathAtomTypeOrdinary;
+                [self addInterElementSpace:prevNode currentType:kMTMathAtomOrdinary];
+                atom.type = kMTMathAtomOrdinary;
                 
                 MTUnderLine* under = (MTUnderLine*) atom;
                 MTDisplay* display = [self makeUnderline:under];
@@ -738,14 +738,14 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 break;
             }
                 
-            case MTMathAtomTypeOverline: {
+            case kMTMathAtomOverline: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
                 }
                 // Overline is considered as Ord in rule 16.
-                [self addInterElementSpace:prevNode currentType:MTMathAtomTypeOrdinary];
-                atom.type = MTMathAtomTypeOrdinary;
+                [self addInterElementSpace:prevNode currentType:kMTMathAtomOrdinary];
+                atom.type = kMTMathAtomOrdinary;
                 
                 MTOverLine* over = (MTOverLine*) atom;
                 MTDisplay* display = [self makeOverline:over];
@@ -758,14 +758,14 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 break;
             }
                 
-            case MTMathAtomTypeAccent: {
+            case kMTMathAtomAccent: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
                 }
                 // Accent is considered as Ord in rule 16.
-                [self addInterElementSpace:prevNode currentType:MTMathAtomTypeOrdinary];
-                atom.type = MTMathAtomTypeOrdinary;
+                [self addInterElementSpace:prevNode currentType:kMTMathAtomOrdinary];
+                atom.type = kMTMathAtomOrdinary;
                 
                 MTAccent* accent = (MTAccent*) atom;
                 MTDisplay* display = [self makeAccent:accent];
@@ -779,14 +779,14 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 break;
             }
                 
-            case MTMathAtomTypeTable: {
+            case kMTMathAtomTable: {
                 // stash the existing layout
                 if (_currentLine.length > 0) {
                     [self addDisplayLine];
                 }
                 // We will consider tables as inner
-                [self addInterElementSpace:prevNode currentType:MTMathAtomTypeInner];
-                atom.type = MTMathAtomTypeInner;
+                [self addInterElementSpace:prevNode currentType:kMTMathAtomInner];
+                atom.type = kMTMathAtomInner;
                 
                 MTMathTable* table = (MTMathTable*) atom;
                 MTDisplay* display = [self makeTable:table];
@@ -796,13 +796,13 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 break;
             }
                 
-            case MTMathAtomTypeOrdinary:
-            case MTMathAtomTypeBinaryOperator:
-            case MTMathAtomTypeRelation:
-            case MTMathAtomTypeOpen:
-            case MTMathAtomTypeClose:
-            case MTMathAtomTypePlaceholder:
-            case MTMathAtomTypePunctuation: {
+            case kMTMathAtomOrdinary:
+            case kMTMathAtomBinaryOperator:
+            case kMTMathAtomRelation:
+            case kMTMathAtomOpen:
+            case kMTMathAtomClose:
+            case kMTMathAtomPlaceholder:
+            case kMTMathAtomPunctuation: {
                 // the rendering for all the rest is pretty similar
                 // All we need is render the character and set the interelement space.
                 if (prevNode) {
@@ -820,7 +820,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                     }
                 }
                 NSAttributedString* current = nil;
-                if (atom.type == MTMathAtomTypePlaceholder) {
+                if (atom.type == kMTMathAtomPlaceholder) {
                     MTColor* color = [MTTypesetter placeholderColor];
                     current = [[NSAttributedString alloc] initWithString:atom.nucleus
                                                               attributes:@{ (NSString*) kCTForegroundColorAttributeName : (id) color.CGColor }];
@@ -870,7 +870,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
     if (_spaced && lastType) {
         // If _spaced then add an interelement space between the last type and close
         MTDisplay* display = [_displayAtoms lastObject];
-        CGFloat interElementSpace = [self getInterElementSpace:lastType right:MTMathAtomTypeClose];
+        CGFloat interElementSpace = [self getInterElementSpace:lastType right:kMTMathAtomClose];
         display.width += interElementSpace;
     }
 }
@@ -907,13 +907,13 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
         case kMTSpaceThin:
             return 3;
         case kMTSpaceNSThin:
-            return (_style < MTLineStyleScript) ? 3 : 0;
+            return (_style < kMTLineStyleScript) ? 3 : 0;
             
         case kMTSpaceNSMedium:
-            return (_style < MTLineStyleScript) ? 4 : 0;
+            return (_style < kMTLineStyleScript) ? 4 : 0;
             
         case kMTSpaceNSThick:
-            return (_style < MTLineStyleScript) ? 5 : 0;
+            return (_style < kMTLineStyleScript) ? 5 : 0;
     }
 }
 
@@ -940,13 +940,13 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 - (MTLineStyle) scriptStyle
 {
     switch (_style) {
-        case MTLineStyleDisplay:
-        case MTLineStyleText:
-            return MTLineStyleScript;
-        case MTLineStyleScript:
-            return MTLineStyleScriptScript;
-        case MTLineStyleScriptScript:
-            return MTLineStyleScriptScript;
+        case kMTLineStyleDisplay:
+        case kMTLineStyleText:
+            return kMTLineStyleScript;
+        case kMTLineStyleScript:
+            return kMTLineStyleScriptScript;
+        case kMTLineStyleScriptScript:
+            return kMTLineStyleScriptScript;
     }
 }
 
@@ -1050,13 +1050,13 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 
 - (CGFloat) numeratorShiftUp:(BOOL) hasRule {
     if (hasRule) {
-        if (_style == MTLineStyleDisplay) {
+        if (_style == kMTLineStyleDisplay) {
             return _styleFont.mathTable.fractionNumeratorDisplayStyleShiftUp;
         } else {
             return _styleFont.mathTable.fractionNumeratorShiftUp;
         }
     } else {
-        if (_style == MTLineStyleDisplay) {
+        if (_style == kMTLineStyleDisplay) {
             return _styleFont.mathTable.stackTopDisplayStyleShiftUp;
         } else {
             return _styleFont.mathTable.stackTopShiftUp;
@@ -1065,7 +1065,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 }
 
 - (CGFloat) numeratorGapMin {
-    if (_style == MTLineStyleDisplay) {
+    if (_style == kMTLineStyleDisplay) {
         return _styleFont.mathTable.fractionNumeratorDisplayStyleGapMin;
     } else {
         return _styleFont.mathTable.fractionNumeratorGapMin;
@@ -1074,13 +1074,13 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 
 - (CGFloat) denominatorShiftDown:(BOOL) hasRule {
     if (hasRule) {
-        if (_style == MTLineStyleDisplay) {
+        if (_style == kMTLineStyleDisplay) {
             return _styleFont.mathTable.fractionDenominatorDisplayStyleShiftDown;
         } else {
             return _styleFont.mathTable.fractionDenominatorShiftDown;
         }
     } else {
-        if (_style == MTLineStyleDisplay) {
+        if (_style == kMTLineStyleDisplay) {
             return _styleFont.mathTable.stackBottomDisplayStyleShiftDown;
         } else {
             return _styleFont.mathTable.stackBottomShiftDown;
@@ -1089,7 +1089,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 }
 
 - (CGFloat) denominatorGapMin {
-    if (_style == MTLineStyleDisplay) {
+    if (_style == kMTLineStyleDisplay) {
         return _styleFont.mathTable.fractionDenominatorDisplayStyleGapMin;
     } else {
         return _styleFont.mathTable.fractionDenominatorGapMin;
@@ -1097,7 +1097,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 }
 
 - (CGFloat) stackGapMin {
-    if (_style == MTLineStyleDisplay) {
+    if (_style == kMTLineStyleDisplay) {
         return _styleFont.mathTable.stackDisplayStyleGapMin;
     } else {
         return _styleFont.mathTable.stackGapMin;
@@ -1105,7 +1105,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 }
 
 - (CGFloat) fractionDelimiterHeight {
-    if (_style == MTLineStyleDisplay) {
+    if (_style == kMTLineStyleDisplay) {
         return _styleFont.mathTable.fractionDelimiterDisplayStyleSize;
     } else {
         return _styleFont.mathTable.fractionDelimiterSize;
@@ -1114,8 +1114,8 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 
 - (MTLineStyle) fractionStyle
 {
-    if (_style == MTLineStyleScriptScript) {
-        return MTLineStyleScriptScript;
+    if (_style == kMTLineStyleScriptScript) {
+        return kMTLineStyleScriptScript;
     }
     return _style + 1;
 }
@@ -1126,13 +1126,13 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
     MTLineStyle fractionStyle;
     MTLineStyle savedStyle = _style;
     switch (frac.fracStyle) {
-        case MTFracStyleOverrideDisplay:
-            fractionStyle = MTLineStyleText;
-            self.style = MTLineStyleDisplay;
+        case kMTFracStyleDisplay:
+            fractionStyle = kMTLineStyleText;
+            self.style = kMTLineStyleDisplay;
             break;
-        case MTFracStyleOverrideText:
-            fractionStyle = MTLineStyleScript;
-            self.style = MTLineStyleText;
+        case kMTFracStyleText:
+            fractionStyle = kMTLineStyleScript;
+            self.style = kMTLineStyleText;
             break;
         default:
             fractionStyle = self.fractionStyle;
@@ -1229,7 +1229,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 
 - (CGFloat) radicalVerticalGap
 {
-    if (_style == MTLineStyleDisplay) {
+    if (_style == kMTLineStyleDisplay) {
         return _styleFont.mathTable.radicalDisplayStyleVerticalGap;
     } else {
         return _styleFont.mathTable.radicalVerticalGap;
@@ -1441,11 +1441,11 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
 
 - (MTDisplay*) makeLargeOp:(MTLargeOperator*) op
 {
-    bool limits = (op.limits && _style == MTLineStyleDisplay);
+    bool limits = (op.limits && _style == kMTLineStyleDisplay);
     CGFloat delta = 0;
     if (op.nucleus.length == 1) {
         CGGlyph glyph = [self findGlyphForCharacterAtIndex:0 inString:op.nucleus];
-        if (_style == MTLineStyleDisplay && glyph != 0) {
+        if (_style == kMTLineStyleDisplay && glyph != 0) {
             // Enlarge the character in display style.
             glyph = [_styleFont.mathTable getLargerGlyph:glyph];
         }
@@ -1487,7 +1487,7 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
         _currentPosition.x += display.width;
         return display;
     }
-    if (op.limits && _style == MTLineStyleDisplay) {
+    if (op.limits && _style == kMTLineStyleDisplay) {
         // make limits
         MTMathListDisplay *superScript = nil, *subScript = nil;
         if (op.superScript) {
@@ -1763,15 +1763,15 @@ static const CGFloat kJotMultiplier = 0.3; // A jot is 3pt for a 10pt font.
         
         CGFloat cellPos = columnStart;
         switch (alignment) {
-            case MTColumnAlignmentRight:
+            case kMTColumnAlignmentRight:
                 cellPos += colWidth - col.width;
                 break;
                 
-            case MTColumnAlignmentCenter:
+            case kMTColumnAlignmentCenter:
                 cellPos += (colWidth - col.width) / 2;
                 break;
                 
-            case MTColumnAlignmentLeft:
+            case kMTColumnAlignmentLeft:
                 // No changes if left aligned
                 break;
         }
