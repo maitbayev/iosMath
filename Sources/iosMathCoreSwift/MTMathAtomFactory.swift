@@ -289,12 +289,14 @@ public final class MTMathAtomFactory: NSObject {
     return _delimValueToName[boundary.nucleus]
   }
 
+  /// Internal lookup that distinguishes "no such style" from `.default`.
+  internal class func lookupFontStyle(name: String) -> MTFontStyle? {
+    return _fontStyles[name]
+  }
+
   @objc(fontStyleWithName:)
   public class func fontStyle(withName name: String) -> MTFontStyle {
-    if let style = _fontStyles[name] {
-      return style
-    }
-    return MTFontStyle(rawValue: UInt(NSNotFound)) ?? .default
+    return _fontStyles[name] ?? .default
   }
 
   @objc(fontNameForStyle:)

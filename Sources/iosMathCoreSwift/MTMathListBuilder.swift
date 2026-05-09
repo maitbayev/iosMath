@@ -132,8 +132,7 @@ public final class MTMathListBuilder: NSObject {
         if applyModifier(command, atom: prevAtom) {
           continue
         }
-        let fontStyle = MTMathAtomFactory.fontStyle(withName: command)
-        if fontStyle.rawValue != UInt(NSNotFound) {
+        if let fontStyle = MTMathAtomFactory.lookupFontStyle(name: command) {
           let oldSpacesAllowed = spacesAllowed
           spacesAllowed = (command == "text")
           let oldFontStyle = currentFontStyle
