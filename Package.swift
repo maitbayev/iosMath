@@ -48,6 +48,10 @@ let package = Package(
       dependencies: ["iosMathCore", "iosMathCoreTestSupport"]
     ),
     .testTarget(
+      name: "iosMathCoreSwiftTests",
+      dependencies: ["iosMathCoreSwift", "iosMathCoreTestSupport"]
+    ),
+    .testTarget(
       name: "iosMathTests",
       dependencies: ["iosMath", "iosMathCore"],
       path: "iosMathTests",
