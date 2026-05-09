@@ -297,6 +297,12 @@ public final class MTMathListRange: NSObject {
   }
 
   /// Unions all ranges in the given array of ranges.
+  ///
+  /// - Warning: This implementation faithfully preserves a long-standing bug in the
+  ///   original Objective-C: each call to `unionRange(_:)` returns a *new* range rather
+  ///   than mutating the receiver, but the loop discards those return values. As a
+  ///   result this function effectively returns `ranges[0]` regardless of the rest of
+  ///   the input. Do not rely on it to produce a true union.
   @objc(unionRanges:)
   public static func unionRanges(_ ranges: [MTMathListRange]) -> MTMathListRange? {
     assert(ranges.count > 0, "Need to union at least one range")

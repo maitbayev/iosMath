@@ -370,7 +370,12 @@ public final class MTMathAtomFactory: NSObject {
     return _fontStyles[name]
   }
 
-  /// Returns a font style associated with the name. If none is found returns `.default`.
+  /// Returns a font style associated with the name. If none is found, returns `.default`.
+  ///
+  /// - Note: This diverges from the original Objective-C API, which returned `NSNotFound`
+  ///   for unknown names. The Swift port cannot fit `NSNotFound` into the `MTFontStyle`
+  ///   raw value space, so it falls back to `.default`. Internal callers should use
+  ///   `lookupFontStyle(name:)` to distinguish "no match" from `.default`.
   @objc(fontStyleWithName:)
   public class func fontStyle(withName name: String) -> MTFontStyle {
     return _fontStyles[name] ?? .default
