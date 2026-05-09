@@ -14,6 +14,7 @@ public let MTSymbolInfinity = "\u{221E}"
 public let MTSymbolAngle = "\u{2220}"
 public let MTSymbolDegree = "\u{00B0}"
 
+/// A factory to create commonly used `MTMathAtom`s.
 @objc(MTMathAtomFactory)
 public final class MTMathAtomFactory: NSObject {
 
@@ -132,18 +133,24 @@ public final class MTMathAtomFactory: NSObject {
 
   // MARK: - Symbol factories
 
+  /// Returns an atom for the multiplication sign (`\times` or `*`).
   @objc public class func times() -> MTMathAtom {
     return MTMathAtom.atom(type: .binaryOperator, value: MTSymbolMultiplication)
   }
 
+  /// Returns an atom for the division sign (`\div` or `/`).
   @objc public class func divide() -> MTMathAtom {
     return MTMathAtom.atom(type: .binaryOperator, value: MTSymbolDivision)
   }
 
+  // MARK: - Placeholders
+
+  /// Returns an atom which is a placeholder square.
   @objc public class func placeholder() -> MTMathAtom {
     return MTMathAtom.atom(type: .placeholder, value: MTSymbolWhiteSquare)
   }
 
+  /// Returns a fraction with a placeholder for the numerator and denominator.
   @objc public class func placeholderFraction() -> MTFraction {
     let frac = MTFraction()
     frac.numerator = MTMathList()
@@ -153,6 +160,7 @@ public final class MTMathAtomFactory: NSObject {
     return frac
   }
 
+  /// Returns a radical with a placeholder as the radicand.
   @objc public class func placeholderRadical() -> MTRadical {
     let rad = MTRadical()
     rad.degree = MTMathList()
@@ -162,6 +170,7 @@ public final class MTMathAtomFactory: NSObject {
     return rad
   }
 
+  /// Returns a square root with a placeholder as the radicand.
   @objc public class func placeholderSquareRoot() -> MTRadical {
     let rad = MTRadical()
     rad.radicand = MTMathList()
@@ -169,24 +178,47 @@ public final class MTMathAtomFactory: NSObject {
     return rad
   }
 
+  // MARK: - Lookups
+
+  /// Returns a large operator for the given name. If `limits` is true, limits are set up
+  /// on the operator and displayed differently.
   @objc(operatorWithName:limits:)
   public class func `operator`(withName name: String, limits: Bool) -> MTLargeOperator {
     return MTLargeOperator(value: name, limits: limits)
   }
 
+  /// Gets the atom with the right type for the given character. If an atom cannot be
+  /// determined for a given character this returns `nil`. This function follows latex
+  /// conventions for assigning types to the atoms.
+  ///
+  /// The following characters are not supported and will return `nil`:
+  /// - Any non-ascii character.
+  /// - Any control character or space (< 0x21).
+  /// - Latex control chars: `$ % # & ~ '`.
+  /// - Chars with special meaning in latex: `^ _ { } \`.
+  ///
+  /// All other characters will have a non-nil atom returned.
   @objc(atomForCharacter:)
   public class func atom(forCharacter ch: unichar) -> MTMathAtom? {
     let chStr = String(utf16CodeUnits: [ch], count: 1)
     if ch > 0x0410 && ch < 0x044F {
+      // Show basic cyrillic alphabet. Latin Modern Math font is not good for cyrillic
+      // symbols.
       return MTMathAtom.atom(type: .ordinary, value: chStr)
     }
-    if ch < 0x21 || ch > 0x7E { return nil }
+    if ch < 0x21 || ch > 0x7E {
+      // Skip non-ascii characters and spaces.
+      return nil
+    }
     switch ch {
     case UInt16(ascii: "$"), UInt16(ascii: "%"), UInt16(ascii: "#"),
       UInt16(ascii: "&"), UInt16(ascii: "~"), UInt16(ascii: "'"):
+      // These are latex control characters that have special meanings. We don't support
+      // them.
       return nil
     case UInt16(ascii: "^"), UInt16(ascii: "_"), UInt16(ascii: "{"),
       UInt16(ascii: "}"), UInt16(ascii: "\\"):
+      // More special characters for Latex.
       return nil
     case UInt16(ascii: "("), UInt16(ascii: "["):
       return MTMathAtom.atom(type: .open, value: chStr)
@@ -197,8 +229,10 @@ public final class MTMathAtomFactory: NSObject {
     case UInt16(ascii: "="), UInt16(ascii: ">"), UInt16(ascii: "<"):
       return MTMathAtom.atom(type: .relation, value: chStr)
     case UInt16(ascii: ":"):
+      // Math colon is ratio. Regular colon is `\colon`.
       return MTMathAtom.atom(type: .relation, value: "\u{2236}")
     case UInt16(ascii: "-"):
+      // Use the math minus sign.
       return MTMathAtom.atom(type: .binaryOperator, value: "\u{2212}")
     case UInt16(ascii: "+"), UInt16(ascii: "*"):
       return MTMathAtom.atom(type: .binaryOperator, value: chStr)
@@ -214,13 +248,18 @@ public final class MTMathAtomFactory: NSObject {
       if ch == UInt16(ascii: "\"") || ch == UInt16(ascii: "/") || ch == UInt16(ascii: "@")
         || ch == UInt16(ascii: "`") || ch == UInt16(ascii: "|")
       {
+        // Just an ordinary character. The following are allowed ordinary chars: | / ` @ "
         return MTMathAtom.atom(type: .ordinary, value: chStr)
       }
-      assertionFailure("Unknown ascii character \(ch)")
+      assertionFailure("Unknown ascii character \(ch). Should have been accounted for.")
       return nil
     }
   }
 
+  /// Returns a `MTMathList` with one atom per character in the given string. This function
+  /// does not do any LaTeX conversion or interpretation. It simply uses
+  /// `atom(forCharacter:)` to convert the characters to atoms. Any character that cannot
+  /// be converted is ignored.
   @objc(mathListForCharacters:)
   public class func mathList(forCharacters chars: String) -> MTMathList {
     let list = MTMathList()
@@ -234,24 +273,43 @@ public final class MTMathAtomFactory: NSObject {
     return list
   }
 
+  /// Returns an atom with the right type for a given latex symbol (e.g. `theta`). If the
+  /// latex symbol is unknown this will return `nil`. This supports LaTeX aliases as well.
   @objc(atomForLatexSymbolName:)
   public class func atom(forLatexSymbolName symbolName: String) -> MTMathAtom? {
     var name = symbolName
+    // First check if this is an alias.
     if let canonical = _aliases[name] {
+      // Switch to the canonical name.
       name = canonical
     }
     if let atom = _supportedLatexSymbols[name] {
+      // Return a copy of the atom since atoms are mutable.
       return atom.copy() as? MTMathAtom
     }
     return nil
   }
 
+  /// Finds the name of the LaTeX symbol name for the given atom. If no latex symbol name
+  /// corresponds to the atom, then this returns `nil`. If the nucleus of the atom is
+  /// empty, then this will return `nil`.
+  ///
+  /// - Note: This is not an exact reverse of `atom(forLatexSymbolName:)` in the case of
+  ///   aliases. If a LaTeX alias points to a given symbol, then this function will return
+  ///   the original symbol name and not the alias.
+  /// - Note: This function does not convert math spaces to latex command names either.
   @objc(latexSymbolNameForAtom:)
   public class func latexSymbolName(for atom: MTMathAtom) -> String? {
     if atom.nucleus.isEmpty { return nil }
     return _textToLatexSymbolNames[atom.nucleus]
   }
 
+  /// Define a latex symbol for rendering. This function allows defining custom symbols
+  /// that are not already present in the default set, or override existing symbols with
+  /// new meaning.
+  ///
+  /// e.g. to define a symbol for "lcm":
+  /// `MTMathAtomFactory.addLatexSymbol("lcm", value: MTMathAtomFactory.operator(withName: "lcm", limits: false))`
   @objc(addLatexSymbol:value:)
   public class func addLatexSymbol(_ name: String, value atom: MTMathAtom) {
     _supportedLatexSymbols[name] = atom
@@ -260,10 +318,14 @@ public final class MTMathAtomFactory: NSObject {
     }
   }
 
+  /// Returns a list of all supported latex symbol names.
   @objc public class func supportedLatexSymbolNames() -> [String] {
     return Array(_supportedLatexSymbols.keys)
   }
 
+  /// Returns an accent with the given name. The name of the accent is the LaTeX name such
+  /// as `grave`, `hat` etc. If the name is not a recognized accent name, this returns
+  /// `nil`. The `innerList` of the returned `MTAccent` is `nil`.
   @objc(accentWithName:)
   public class func accent(withName name: String) -> MTAccent? {
     if let value = _accents[name] {
@@ -272,17 +334,31 @@ public final class MTMathAtomFactory: NSObject {
     return nil
   }
 
+  /// Returns the accent name for the given accent. This is the reverse of
+  /// `accent(withName:)`.
   @objc(accentName:)
   public class func accentName(_ accent: MTAccent) -> String? {
     return _accentValueToName[accent.nucleus]
   }
 
+  /// Creates a new boundary atom for the given delimiter name. If the delimiter name is
+  /// not recognized it returns `nil`. A delimiter name can be a single character such as
+  /// `(` or a latex command such as `uparrow`.
+  ///
+  /// - Note: In order to distinguish between the delimiter `|` and the delimiter `\|` the
+  ///   delimiter `\|` has been renamed to `||`.
   @objc(boundaryAtomForDelimiterName:)
   public class func boundaryAtom(forDelimiterName name: String) -> MTMathAtom? {
     guard let value = _delimiters[name] else { return nil }
     return MTMathAtom.atom(type: .boundary, value: value)
   }
 
+  /// Returns the delimiter name for a boundary atom. This is the reverse of
+  /// `boundaryAtom(forDelimiterName:)`. If the atom is not a boundary atom or if the
+  /// delimiter value is unknown this returns `nil`.
+  ///
+  /// - Note: This is not an exact reverse. Some delimiters have two names (e.g. `<` and
+  ///   `langle`) and this function always returns the shorter name.
   @objc(delimiterNameForBoundaryAtom:)
   public class func delimiterName(forBoundaryAtom boundary: MTMathAtom) -> String? {
     if boundary.type != .boundary { return nil }
@@ -294,11 +370,13 @@ public final class MTMathAtomFactory: NSObject {
     return _fontStyles[name]
   }
 
+  /// Returns a font style associated with the name. If none is found returns `.default`.
   @objc(fontStyleWithName:)
   public class func fontStyle(withName name: String) -> MTFontStyle {
     return _fontStyles[name] ?? .default
   }
 
+  /// Returns the latex font name for a given style.
   @objc(fontNameForStyle:)
   public class func fontName(for fontStyle: MTFontStyle) -> String {
     switch fontStyle {
@@ -315,6 +393,7 @@ public final class MTMathAtomFactory: NSObject {
     }
   }
 
+  /// Returns a fraction with the given numerator and denominator.
   @objc(fractionWithNumerator:denominator:)
   public class func fraction(withNumerator num: MTMathList, denominator denom: MTMathList)
     -> MTFraction
@@ -325,6 +404,8 @@ public final class MTMathAtomFactory: NSObject {
     return frac
   }
 
+  /// Convenience overload for when the numerator and denominator are simple strings. Uses
+  /// `mathList(forCharacters:)` to convert the strings to `MTMathList`s.
   @objc(fractionWithNumeratorStr:denominatorStr:)
   public class func fraction(withNumeratorStr numStr: String, denominatorStr denomStr: String)
     -> MTFraction
@@ -334,6 +415,19 @@ public final class MTMathAtomFactory: NSObject {
     return self.fraction(withNumerator: num, denominator: denom)
   }
 
+  /// Builds a table for a given environment with the given rows. Returns a `MTMathAtom`
+  /// containing the table and any other atoms necessary for the given environment.
+  /// Returns `nil` and sets `error` if the table could not be built.
+  ///
+  /// - Parameters:
+  ///   - env: The environment to use to build the table. If `nil`, then the default table
+  ///     is built.
+  ///   - rows: The cells of the table.
+  ///   - error: Out-parameter populated with a parse error if the table could not be
+  ///     built.
+  /// - Note: The reason this function returns a `MTMathAtom` and not a `MTMathTable` is
+  ///   because some matrix environments have builtin delimiters added to the table and
+  ///   hence are returned as inner atoms.
   @objc(tableWithEnvironment:rows:error:)
   public class func table(
     withEnvironment env: String?,
@@ -355,15 +449,18 @@ public final class MTMathAtomFactory: NSObject {
       "Vmatrix": ["Vert", "Vert"],
     ]
     if let env = env, let delims = matrixEnvs[env] {
+      // It is set to matrix as the delimiters are converted to latex outside the table.
       table.environment = "matrix"
       table.interRowAdditionalSpacing = 0
       table.interColumnSpacing = 18
+      // All the lists are in textstyle.
       let style = MTMathStyle(style: .text)
       for i in 0..<table.cells.count {
         for j in 0..<table.cells[i].count {
           table.cells[i][j].insertAtom(style, at: 0)
         }
       }
+      // Add delimiters.
       if delims.count == 2 {
         let inner = MTInner()
         inner.leftBoundary = self.boundaryAtom(forDelimiterName: delims[0])
@@ -373,6 +470,7 @@ public final class MTMathAtomFactory: NSObject {
       }
       return table
     } else if env == nil {
+      // The default env.
       table.interRowAdditionalSpacing = 1
       table.interColumnSpacing = 0
       let cols = Int(table.numColumns())
@@ -388,6 +486,8 @@ public final class MTMathAtomFactory: NSObject {
           userInfo: [NSLocalizedDescriptionKey: message])
         return nil
       }
+      // Add a spacer before each of the second column elements. This is to create the
+      // correct spacing for `=` and other relations.
       let spacer = MTMathAtom.atom(type: .ordinary, value: "")
       for i in 0..<table.cells.count {
         if table.cells[i].count > 1 {
@@ -437,12 +537,14 @@ public final class MTMathAtomFactory: NSObject {
       table.interColumnSpacing = 18
       table.setAlignment(.left, forColumn: 0)
       table.setAlignment(.left, forColumn: 1)
+      // All the lists are in textstyle.
       let style = MTMathStyle(style: .text)
       for i in 0..<table.cells.count {
         for j in 0..<table.cells[i].count {
           table.cells[i][j].insertAtom(style, at: 0)
         }
       }
+      // Add delimiters.
       let inner = MTInner()
       inner.leftBoundary = self.boundaryAtom(forDelimiterName: "{")
       inner.rightBoundary = self.boundaryAtom(forDelimiterName: ".")

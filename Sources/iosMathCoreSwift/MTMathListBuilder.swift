@@ -1,24 +1,44 @@
 import Foundation
 
+/// The error domain for parse errors raised while building a `MTMathList` from LaTeX.
 public let MTParseError = "ParseError"
 
+/// The error encountered when parsing a LaTeX string.
+///
+/// The `code` in the `NSError` is one of the following indicating why the LaTeX string
+/// could not be parsed.
 @objc public enum MTParseErrors: UInt {
+  /// The braces { } do not match.
   case mismatchBraces = 1
+  /// A command in the string is not recognized.
   case invalidCommand
+  /// An expected character such as ] was not found.
   case characterNotFound
+  /// The `\left` or `\right` command was not followed by a delimiter.
   case missingDelimiter
+  /// The delimiter following `\left` or `\right` was not a valid delimiter.
   case invalidDelimiter
+  /// There is no `\right` corresponding to the `\left` command.
   case missingRight
+  /// There is no `\left` corresponding to the `\right` command.
   case missingLeft
+  /// The environment given to the `\begin` command is not recognized.
   case invalidEnv
+  /// A command is used which is only valid inside a `\begin`,`\end` environment.
   case missingEnv
+  /// There is no `\begin` corresponding to the `\end` command.
   case missingBegin
+  /// There is no `\end` corresponding to the `\begin` command.
   case missingEnd
+  /// The number of columns does not match the environment.
   case invalidNumColumns
+  /// Internal error, due to a programming mistake.
   case internalError
+  /// Limit control applied incorrectly.
   case invalidLimits
 }
 
+/// Tracks state for a `\begin{...}...\end{...}` environment while it is being parsed.
 private final class MTEnvProperties {
   let envName: String?
   var ended: Bool = false
@@ -28,9 +48,12 @@ private final class MTEnvProperties {
   }
 }
 
+/// `MTMathListBuilder` is a class for parsing LaTeX into a `MTMathList` that can be rendered
+/// and processed mathematically.
 @objc(MTMathListBuilder)
 public final class MTMathListBuilder: NSObject {
 
+  /// Contains any error that occurred during parsing.
   @objc public private(set) var error: NSError?
 
   private var chars: [unichar]
@@ -41,6 +64,11 @@ public final class MTMathListBuilder: NSObject {
   private var currentFontStyle: MTFontStyle = .default
   private var spacesAllowed: Bool = false
 
+  /// Create a `MTMathListBuilder` for the given string. After instantiating, use `build()`
+  /// to build the math list. Create a new `MTMathListBuilder` for each string that needs
+  /// to be parsed; do not reuse the object.
+  ///
+  /// - Parameter str: The LaTeX string to be used to build the `MTMathList`.
   @objc(initWithString:)
   public init(string str: String) {
     let nsstr = str as NSString
@@ -52,6 +80,7 @@ public final class MTMathListBuilder: NSObject {
 
   private func hasCharacters() -> Bool { return currentChar < length }
 
+  /// Gets the next character and moves the pointer ahead.
   private func getNextCharacter() -> unichar {
     let c = chars[currentChar]
     currentChar += 1
@@ -62,9 +91,12 @@ public final class MTMathListBuilder: NSObject {
     currentChar -= 1
   }
 
+  /// Builds a math list from the parser's input. Returns `nil` if there is an error;
+  /// inspect `error` for details.
   @objc public func build() -> MTMathList? {
     let list = self.buildInternal(oneCharOnly: false)
     if hasCharacters() && error == nil {
+      // Something went wrong, most likely braces mismatched.
       let str = String(utf16CodeUnits: chars, count: chars.count)
       setError(.mismatchBraces, message: "Mismatched braces: \(str)")
     }
@@ -87,29 +119,41 @@ public final class MTMathListBuilder: NSObject {
           UInt16(ascii: "^"), UInt16(ascii: "}"), UInt16(ascii: "_"), UInt16(ascii: "&"),
         ]
         if stops.contains(ch) {
+          // This is not the character we are looking for. They are meant for the caller
+          // to look at.
           unlookCharacter()
           return list
         }
       }
+      // If there is a stop character, keep scanning till we find it.
       if stopChar > 0 && ch == stopChar {
         return list
       }
 
       if ch == UInt16(ascii: "^") {
         if prevAtom == nil || prevAtom!.superScript != nil || !prevAtom!.scriptsAllowed() {
+          // If there is no previous atom, or if it already has a superscript or if scripts
+          // are not allowed for it, then add an empty node.
           prevAtom = MTMathAtom.atom(type: .ordinary, value: "")
           list.addAtom(prevAtom!)
         }
+        // This is a superscript for the previous atom.
+        // Note: if the next char is the stopChar it will be consumed by the ^ and so it
+        // doesn't count as stop.
         prevAtom!.superScript = self.buildInternal(oneCharOnly: true)
         continue
       } else if ch == UInt16(ascii: "_") {
         if prevAtom == nil || prevAtom!.subScript != nil || !prevAtom!.scriptsAllowed() {
+          // If there is no previous atom, or if it already has a subscript or if scripts
+          // are not allowed for it, then add an empty node.
           prevAtom = MTMathAtom.atom(type: .ordinary, value: "")
           list.addAtom(prevAtom!)
         }
+        // This is a subscript for the previous atom.
         prevAtom!.subScript = self.buildInternal(oneCharOnly: true)
         continue
       } else if ch == UInt16(ascii: "{") {
+        // Recurse with oneCharOnly false and no stop character.
         let sublist = self.buildInternal(oneCharOnly: false, stopChar: UInt16(ascii: "}"))
         prevAtom = sublist?.atoms.last
         if let s = sublist {
@@ -120,9 +164,12 @@ public final class MTMathListBuilder: NSObject {
         }
         continue
       } else if ch == UInt16(ascii: "}") {
+        // We encountered a closing brace when there is no stop set, that means there was
+        // no corresponding opening brace.
         setError(.mismatchBraces, message: "Mismatched braces.")
         return nil
       } else if ch == UInt16(ascii: "\\") {
+        // \ means a command.
         let command = readCommand()
         if let done = stopCommand(command, list: list, stopChar: stopChar) {
           return done
@@ -134,10 +181,12 @@ public final class MTMathListBuilder: NSObject {
         }
         if let fontStyle = MTMathAtomFactory.lookupFontStyle(name: command) {
           let oldSpacesAllowed = spacesAllowed
+          // Text has special consideration where it allows spaces without escaping.
           spacesAllowed = (command == "text")
           let oldFontStyle = currentFontStyle
           currentFontStyle = fontStyle
           let sublist = self.buildInternal(oneCharOnly: true)
+          // Restore the font style.
           currentFontStyle = oldFontStyle
           spacesAllowed = oldSpacesAllowed
           prevAtom = sublist?.atoms.last
@@ -147,41 +196,54 @@ public final class MTMathListBuilder: NSObject {
         }
         atom = atomForCommand(command)
         if atom == nil {
+          // Unknown command — flag an error and return.
           setError(.internalError, message: "Internal error")
           return nil
         }
       } else if ch == UInt16(ascii: "&") {
+        // Used for column separation in tables.
         if currentEnv != nil {
           return list
         } else {
+          // Create a new table with the current list and a default env.
           if let table = buildTable(env: nil, firstList: list, isRow: false) {
             return MTMathList.mathList(withAtomsArray: [table])
           }
           return nil
         }
       } else if spacesAllowed && ch == UInt16(ascii: " ") {
+        // If spaces are allowed then spaces do not need escaping with a \ before being used.
         atom = MTMathAtomFactory.atom(forLatexSymbolName: " ")
       } else {
         atom = MTMathAtomFactory.atom(forCharacter: ch)
-        if atom == nil { continue }
+        if atom == nil {
+          // Not a recognized character.
+          continue
+        }
       }
 
       atom!.fontStyle = currentFontStyle
       list.addAtom(atom!)
       prevAtom = atom
 
-      if oneCharOnly { return list }
+      if oneCharOnly {
+        // We consumed our one char.
+        return list
+      }
     }
     if stopChar > 0 {
       if stopChar == UInt16(ascii: "}") {
+        // We did not find a corresponding closing brace.
         setError(.mismatchBraces, message: "Missing closing brace")
       } else {
+        // We never found our stop character.
         setError(.characterNotFound, message: "Expected character not found: \(stopChar)")
       }
     }
     return list
   }
 
+  /// Reads a string of all upper and lower case characters.
   private func readString() -> String {
     var s: [unichar] = []
     while hasCharacters() {
@@ -191,6 +253,7 @@ public final class MTMathListBuilder: NSObject {
       {
         s.append(ch)
       } else {
+        // We went too far.
         unlookCharacter()
         break
       }
@@ -224,10 +287,14 @@ public final class MTMathListBuilder: NSObject {
     return String(utf16CodeUnits: s, count: s.count)
   }
 
+  /// Skips non-ascii characters and spaces.
   private func skipSpaces() {
     while hasCharacters() {
       let ch = getNextCharacter()
-      if ch < 0x21 || ch > 0x7E { continue }
+      if ch < 0x21 || ch > 0x7E {
+        // Skip non-ascii characters and spaces.
+        continue
+      }
       unlookCharacter()
       return
     }
@@ -264,13 +331,19 @@ public final class MTMathListBuilder: NSObject {
     while hasCharacters() {
       let ch = getNextCharacter()
       if ch == UInt16(ascii: "\\") {
+        // \ means a command.
         let command = readCommand()
-        if command == "|" { return "||" }
+        if command == "|" {
+          // | is a command and also a regular delimiter. We use the || command to
+          // distinguish between the 2 cases for the caller.
+          return "||"
+        }
         return command
       } else {
         return String(utf16CodeUnits: [ch], count: 1)
       }
     }
+    // We ran out of characters for delimiter.
     return nil
   }
 
@@ -310,6 +383,7 @@ public final class MTMathListBuilder: NSObject {
     }
     switch command {
     case "frac":
+      // A fraction command has 2 arguments.
       let frac = MTFraction()
       frac.numerator = self.buildInternal(oneCharOnly: true) ?? MTMathList()
       frac.denominator = self.buildInternal(oneCharOnly: true) ?? MTMathList()
@@ -327,6 +401,7 @@ public final class MTMathListBuilder: NSObject {
       frac.fracStyle = .text
       return frac
     case "binom":
+      // A binom command has 2 arguments.
       let frac = MTFraction(rule: false)
       frac.numerator = self.buildInternal(oneCharOnly: true) ?? MTMathList()
       frac.denominator = self.buildInternal(oneCharOnly: true) ?? MTMathList()
@@ -334,9 +409,11 @@ public final class MTMathListBuilder: NSObject {
       frac.rightDelimiter = ")"
       return frac
     case "sqrt":
+      // A sqrt command with one argument.
       let rad = MTRadical()
       let ch = getNextCharacter()
       if ch == UInt16(ascii: "[") {
+        // Special handling for sqrt[degree]{radicand}.
         rad.degree = self.buildInternal(oneCharOnly: false, stopChar: UInt16(ascii: "]"))
         rad.radicand = self.buildInternal(oneCharOnly: true)
       } else {
@@ -345,6 +422,7 @@ public final class MTMathListBuilder: NSObject {
       }
       return rad
     case "left":
+      // Save the current inner while a new one gets built.
       let oldInner = currentInnerAtom
       currentInnerAtom = MTInner()
       let leftBoundary = getBoundaryAtom(delimiterType: "left")
@@ -352,17 +430,22 @@ public final class MTMathListBuilder: NSObject {
       currentInnerAtom!.leftBoundary = leftBoundary
       currentInnerAtom!.innerList = self.buildInternal(oneCharOnly: false)
       if currentInnerAtom!.rightBoundary == nil {
+        // A right node would have set the right boundary so we must be missing the right
+        // node.
         setError(.missingRight, message: "Missing \\right")
         return nil
       }
+      // Reinstate the old inner atom.
       let newInner = currentInnerAtom!
       currentInnerAtom = oldInner
       return newInner
     case "overline":
+      // The overline command has 1 argument.
       let over = MTOverLine()
       over.innerList = self.buildInternal(oneCharOnly: true)
       return over
     case "underline":
+      // The underline command has 1 argument.
       let under = MTUnderLine()
       under.innerList = self.buildInternal(oneCharOnly: true)
       return under
@@ -370,11 +453,13 @@ public final class MTMathListBuilder: NSObject {
       guard let env = readEnvironment() else { return nil }
       return buildTable(env: env, firstList: nil, isRow: false)
     case "color":
+      // A color command has 2 arguments.
       let mc = MTMathColor()
       mc.colorString = readColor()
       mc.innerList = self.buildInternal(oneCharOnly: true)
       return mc
     case "colorbox":
+      // A colorbox command has 2 arguments.
       let mc = MTMathColorbox()
       mc.colorString = readColor()
       mc.innerList = self.buildInternal(oneCharOnly: true)
@@ -423,9 +508,11 @@ public final class MTMathListBuilder: NSObject {
     }
     if command == "\\" || command == "cr" {
       if let env = currentEnv {
+        // Stop the current list and increment the row count.
         env.numRows += 1
         return list
       } else {
+        // Create a new table with the current list and a default env.
         if let table = buildTable(env: nil, firstList: list, isRow: true) {
           return MTMathList.mathList(withAtomsArray: [table])
         }
@@ -445,12 +532,14 @@ public final class MTMathListBuilder: NSObject {
             "Begin environment name \(currentEnv!.envName ?? "") does not match end name: \(env)")
         return nil
       }
+      // Finish the current environment.
       currentEnv!.ended = true
       return list
     }
     return nil
   }
 
+  /// Applies the modifier to the atom. Returns true if a modifier was applied.
   private func applyModifier(_ modifier: String, atom: MTMathAtom?) -> Bool {
     if modifier == "limits" {
       if atom?.type != .largeOperator {
@@ -472,7 +561,9 @@ public final class MTMathListBuilder: NSObject {
     return false
   }
 
+  /// Records the first error to occur during parsing. Subsequent errors are ignored.
   private func setError(_ code: MTParseErrors, message: String) {
+    // Only record the first error.
     if error == nil {
       error = NSError(
         domain: MTParseError, code: Int(code.rawValue),
@@ -481,6 +572,7 @@ public final class MTMathListBuilder: NSObject {
   }
 
   private func buildTable(env: String?, firstList: MTMathList?, isRow: Bool) -> MTMathAtom? {
+    // Save the current env until a new one gets built.
     let oldEnv = currentEnv
     currentEnv = MTEnvProperties(name: env)
     var currentRow = 0
@@ -531,17 +623,22 @@ public final class MTMathListBuilder: NSObject {
       error = tableErr
       return nil
     }
+    // Reinstate the old env.
     currentEnv = oldEnv
     return table
   }
 
   // MARK: - Static API
 
+  /// Construct a math list from a given string. If there is a parse error, returns `nil`.
+  /// To retrieve the error use `build(fromString:error:)`.
   @objc(buildFromString:)
   public class func build(fromString str: String) -> MTMathList? {
     return MTMathListBuilder(string: str).build()
   }
 
+  /// Construct a math list from a given string. If there is an error while constructing
+  /// the string, this returns `nil`. The error is returned in the `error` parameter.
   @objc(buildFromString:error:)
   public class func build(fromString str: String, error: NSErrorPointer) -> MTMathList? {
     let builder = MTMathListBuilder(string: str)
@@ -576,6 +673,7 @@ public final class MTMathListBuilder: NSObject {
     return ""
   }
 
+  /// Converts the `MTMathList` to LaTeX.
   @objc(mathListToString:)
   public class func mathList(toString ml: MTMathList) -> String {
     var s = ""
@@ -583,9 +681,11 @@ public final class MTMathListBuilder: NSObject {
     for atom in ml.atoms {
       if currentFontStyle != atom.fontStyle {
         if currentFontStyle != .default {
+          // Close the previous font style.
           s += "}"
         }
         if atom.fontStyle != .default {
+          // Open new font style.
           let name = MTMathAtomFactory.fontName(for: atom.fontStyle)
           s += "\\\(name){"
         }
@@ -717,8 +817,10 @@ public final class MTMathListBuilder: NSObject {
       } else if atom.nucleus.isEmpty {
         s += "{}"
       } else if atom.nucleus == "\u{2236}" {
+        // Math colon.
         s += ":"
       } else if atom.nucleus == "\u{2212}" {
+        // Math minus.
         s += "-"
       } else {
         if let command = MTMathAtomFactory.latexSymbolName(for: atom) {
