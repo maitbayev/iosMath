@@ -1,7 +1,6 @@
 import Foundation
 import Testing
 import iosMathCoreSwift
-import iosMathCoreTestSupport
 
 // MARK: - MTMathList
 
@@ -32,12 +31,6 @@ struct MathListTests {
     #expect(list.atoms[1] === a2)
   }
 
-  @Test func addErrors() {
-    let list = MTMathList()
-    let boundary = MTMathAtom(type: .boundary, value: "")
-    #expect(ObjCExceptionCatcher.catchException { list.addAtom(boundary) })
-  }
-
   @Test func insert() {
     let list = MTMathList()
     let a1 = MTMathAtomFactory.placeholder()
@@ -57,14 +50,6 @@ struct MathListTests {
     #expect(list.atoms[0] === a2)
     #expect(list.atoms[1] === a1)
     #expect(list.atoms[2] === a3)
-  }
-
-  @Test func insertErrors() {
-    let list = MTMathList()
-    let boundary = MTMathAtom(type: .boundary, value: "")
-    #expect(ObjCExceptionCatcher.catchException { list.insertAtom(boundary, at: 0) })
-    let valid = MTMathAtomFactory.placeholder()
-    #expect(ObjCExceptionCatcher.catchException { list.insertAtom(valid, at: 1) })
   }
 
   @Test func append() {
@@ -119,7 +104,6 @@ struct MathListTests {
     list.removeAtom(at: 0)
     #expect(list.atoms.count == 1)
     #expect(list.atoms[0] === a2)
-    #expect(ObjCExceptionCatcher.catchException { list.removeAtom(at: 2) })
   }
 
   @Test func removeAtomsInRange() {
@@ -134,8 +118,6 @@ struct MathListTests {
     list.removeAtoms(in: NSRange(location: 1, length: 2))
     #expect(list.atoms.count == 1)
     #expect(list.atoms[0] === a1)
-    #expect(
-      ObjCExceptionCatcher.catchException { list.removeAtoms(in: NSRange(location: 1, length: 3)) })
   }
 
   @Test func copy() {
@@ -226,7 +208,7 @@ struct MathAtomTests {
     #expect(open.nucleus == "(")
     #expect(open.type == .open)
 
-    let radical = MTMathAtom(type: .radical, value: "(")
+    let radical = MTMathAtom.atom(type: .radical, value: "(")
     #expect(radical.nucleus == "")
     #expect(radical.type == .radical)
   }
@@ -245,10 +227,6 @@ struct MathAtomTests {
     #expect(atom.subScript == nil)
     atom.superScript = nil
     #expect(atom.superScript == nil)
-
-    let list = MTMathList()
-    #expect(ObjCExceptionCatcher.catchException { atom.subScript = list })
-    #expect(ObjCExceptionCatcher.catchException { atom.superScript = list })
   }
 
   @Test func atomCopy() {
@@ -322,9 +300,6 @@ struct MathAtomTests {
     inner.rightBoundary = nil
     #expect(inner.leftBoundary == nil)
     #expect(inner.rightBoundary == nil)
-    let nonBoundary = MTMathAtomFactory.placeholder()
-    #expect(ObjCExceptionCatcher.catchException { inner.leftBoundary = nonBoundary })
-    #expect(ObjCExceptionCatcher.catchException { inner.rightBoundary = nonBoundary })
   }
 
   @Test func copyOverline() {

@@ -318,9 +318,7 @@ public class MTMathAtom: NSObject, NSCopying {
 
   /// Makes a deep copy of the atom.
   public func copy(with zone: NSZone? = nil) -> Any {
-    let atom = type(of: self).init(type: self.type, value: self.nucleus)
-    atom.type = self.type
-    atom.nucleus = self.nucleus
+    let atom = Swift.type(of: self).init(type: self.type, value: self.nucleus)
     atom._subScript = self.subScript?.copy() as? MTMathList
     atom._superScript = self.superScript?.copy() as? MTMathList
     atom.indexRange = self.indexRange
@@ -365,7 +363,7 @@ public final class MTFraction: MTMathAtom {
   @objc public var fracStyle: MTFracStyleOverride = .normal
 
   /// Creates an empty fraction with a rule.
-  @objc public override convenience init() {
+  @objc public convenience init() {
     self.init(rule: true)
   }
 
@@ -388,7 +386,7 @@ public final class MTFraction: MTMathAtom {
   }
 
   public override var stringValue: String {
-    var s = self.hasRule ? "\\atop" : "\\frac"
+    var s = self.hasRule ? "\\frac" : "\\atop"
     if self.leftDelimiter != nil || self.rightDelimiter != nil {
       s += "[\(self.leftDelimiter ?? "")][\(self.rightDelimiter ?? "")]"
     }
@@ -433,7 +431,7 @@ public final class MTRadical: MTMathAtom {
   @objc public var degree: MTMathList?
 
   /// Creates an empty radical.
-  @objc public override init() {
+  @objc public init() {
     // radicals have no nucleus
     super.init(type: .radical, value: "")
   }
@@ -549,7 +547,7 @@ public final class MTInner: MTMathAtom {
   }
 
   /// Creates an empty inner.
-  @objc public override init() {
+  @objc public init() {
     // inner atoms have no nucleus
     super.init(type: .inner, value: "")
   }
@@ -603,7 +601,7 @@ public final class MTOverLine: MTMathAtom {
   @objc public var innerList: MTMathList?
 
   /// Creates an empty over.
-  @objc public override init() {
+  @objc public init() {
     super.init(type: .overline, value: "")
   }
 
@@ -636,7 +634,7 @@ public final class MTUnderLine: MTMathAtom {
   @objc public var innerList: MTMathList?
 
   /// Creates an empty under.
-  @objc public override init() {
+  @objc public init() {
     super.init(type: .underline, value: "")
   }
 
@@ -779,7 +777,7 @@ public final class MTMathColor: MTMathAtom {
   @objc public var innerList: MTMathList?
 
   /// Creates an empty color with a nil environment.
-  @objc public override init() {
+  @objc public init() {
     super.init(type: .color, value: "")
   }
 
@@ -822,7 +820,7 @@ public final class MTMathColorbox: MTMathAtom {
   @objc public var innerList: MTMathList?
 
   /// Creates an empty colorbox with a nil environment.
-  @objc public override init() {
+  @objc public init() {
     super.init(type: .colorbox, value: "")
   }
 
@@ -884,7 +882,7 @@ public final class MTMathTable: MTMathAtom {
   }
 
   /// Creates an empty table with a nil environment.
-  @objc public override convenience init() {
+  @objc public convenience init() {
     self.init(environment: nil)
   }
 

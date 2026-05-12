@@ -1,7 +1,6 @@
 import Foundation
 import Testing
 import iosMathCoreSwift
-import iosMathCoreTestSupport
 
 // MARK: - Test case types
 
@@ -283,7 +282,8 @@ private let parseErrorCases: [ParseErrorCase] = [
 
 // MARK: - Tests
 
-@Suite("MathListBuilder")
+// .serialized: addLatexSymbol mutates shared static dicts; concurrent reads race without this.
+@Suite("MathListBuilder", .serialized)
 struct MathListBuilderTests {
 
   // MARK: Basic
@@ -859,7 +859,7 @@ struct MathListBuilderTests {
   func parseError(_ tc: ParseErrorCase) {
     let builder = MTMathListBuilder(string: tc.input)
     #expect(builder.build() == nil)
-    let error = builder.error as? NSError
+    let error = builder.error
     #expect(error != nil)
     #expect(error?.domain == MTParseError)
     #expect(error?.code == Int(tc.error.rawValue))

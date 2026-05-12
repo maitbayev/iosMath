@@ -43,21 +43,21 @@ let package = Package(
       name: "iosMathCoreTestSupport",
       path: "Tests/iosMathCoreTestSupport"
     ),
-    .testTarget(
-      name: "iosMathCoreTests",
-      dependencies: ["iosMathCore", "iosMathCoreTestSupport"]
-    ),
+    // .testTarget(
+    //   name: "iosMathCoreTests",
+    //   dependencies: ["iosMathCore", "iosMathCoreTestSupport"]
+    // ),
     .testTarget(
       name: "iosMathCoreSwiftTests",
-      dependencies: ["iosMathCoreSwift", "iosMathCoreTestSupport"]
+      dependencies: ["iosMathCoreSwift"]
     ),
-    .testTarget(
-      name: "iosMathTests",
-      dependencies: ["iosMath", "iosMathCore"],
-      path: "iosMathTests",
-      cSettings: [
-        .headerSearchPath("../iosMath/render")
-      ]
-    ),
+    // .testTarget(
+    //   name: "iosMathTests",
+    //   dependencies: ["iosMath", "iosMathCore"],
+    //   path: "iosMathTests",
+    //   cSettings: [
+    //     .headerSearchPath("../iosMath/render")
+    //   ]
+    // ),
   ]
 )

@@ -1,5 +1,13 @@
 import Foundation
 
+extension UInt16 {
+  /// Convenience initializer matching `Unicode.Scalar(ascii:)` semantics.
+  /// Allows `UInt16(ascii: "A")` to work with `unichar` switch patterns.
+  init(ascii scalar: Unicode.Scalar) {
+    self = UInt16(scalar.value)
+  }
+}
+
 extension NSString {
   /// Returns the number of Unicode scalars (i.e. UTF-32 code points) in the string.
   ///
